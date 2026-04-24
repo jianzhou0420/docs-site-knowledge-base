@@ -1,0 +1,6 @@
+mkdocs>=1.6
+mkdocs-material>=9.5
+mkdocs-awesome-pages-plugin>=2.9
+mkdocs-redirects>=1.2
+# Optional but useful — image lightbox for screenshots; drop if not needed.
+mkdocs-glightbox>=0.4

@@ -1,0 +1,12 @@
+title: Knowledge Base
+# Pattern: virtual sub-sections.
+# The files on disk are flat (no sub-folders), but .pages can group them
+# into themed sub-sections in the sidebar. Each sub-section becomes a
+# collapsible group — the grouping lives only in this file, not in the
+# filesystem.
+nav:
+  - index.md
+  - Group A:
+    - "Example Topic One": example-topic.md
+  # - Group B:
+  #   - "Another topic": another-topic.md
