@@ -16,7 +16,7 @@ The repo pairs MkDocs Material with a filesystem-driven nav so Claude can shape 
 | The author (Claude) needs to know the rules | Conventions are documented inside the rendered site under the **Guide** tab, so Claude can read them on demand. |
 | You want to *read* the result, not just diff it | MkDocs Material gives you a fast, searchable site with dark mode out of the box. |
 
-Same spirit as [Andrej Karpathy's LLM knowledge-base workflow](https://x.com/karpathy/status/1860019351829016919) (raw sources → LLM-compiled wiki → browsable frontend); different tools. Karpathy uses Obsidian as the IDE; this repo uses MkDocs as a static-site renderer, which trades the graph view for out-of-the-box publishability and search.
+Same spirit as Andrej Karpathy's "LLM Knowledge Bases" workflow (raw sources → LLM-compiled wiki → browsable frontend); different tools. Karpathy uses Obsidian as the IDE; this repo uses MkDocs as a static-site renderer, which trades the graph view for out-of-the-box publishability and search.
 
 ## What's in the repo
 
