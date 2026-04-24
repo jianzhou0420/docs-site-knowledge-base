@@ -48,7 +48,7 @@ plugins:
   # Change the target if your default landing page moves.
   - redirects:
       redirect_maps:
-        'index.md': 'developer-guide/core/blueprint.md'
+        'index.md': 'guide/index.md'
 
 markdown_extensions:
   - admonition

@@ -1,0 +1,7 @@
+title: Guide
+nav:
+  - index.md
+  - Installation: installation.md
+  - Quick Start: quick-start.md
+  - Why this pattern: why.md
+  - Conventions: conventions.md
