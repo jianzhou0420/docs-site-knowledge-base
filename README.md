@@ -37,7 +37,7 @@ The site that ships in `docs/` is **self-documenting** — it's both the manual 
 ## Getting started
 
 ```bash
-git clone https://github.com/jianzhou0420/docs-site-knowledge-base.git my-kb
+git clone --recurse-submodules https://github.com/jianzhou0420/docs-site-knowledge-base.git my-kb
 cd my-kb
 conda create -n my-kb python=3.11 -y
 conda activate my-kb
@@ -48,6 +48,8 @@ pip install -r requirements.txt
 
 Full install notes, the conventions your Claude agent should follow, and worked recipes live under the **Guide** and **Recipes** tabs of the rendered site. Rationale and tradeoffs are in `Guide → Why this pattern`.
 
+A live **Knowledge Base** tab ships as a git submodule (`docs/kb-vln` → [kb-vln](https://github.com/jianzhou0420/kb-vln)) so you can see what a populated, filesystem-driven KB feels like before writing your own. Recipe: `Recipes → Add a tab → Importing an external KB`.
+
 ## A typical session
 
 1. Drop a source — a paper PDF, a clipping, a conversation transcript — into a topical folder under `docs/`.
@@ -56,6 +58,14 @@ Full install notes, the conventions your Claude agent should follow, and worked 
 4. When the KB is big enough, query Claude across it ("what have I learned about X?") and file the answer back into `docs/` as a new synthesized page.
 
 The human rarely writes the wiki directly. The human drops material, asks questions, and reads.
+
+## A real-world example
+
+The **AgentCanvas** project uses this exact pattern — its entire doc-site (developer guide, knowledge base, research notes, presentations) is built from the same scaffold, and Claude is the primary author.
+
+Source: [github.com/jianzhou0420/AgentCanvas/tree/master/docs-site](https://github.com/jianzhou0420/AgentCanvas/tree/master/docs-site)
+
+Browse it to see what a few hundred Claude-authored pages look like in practice: ADRs, design docs, tutorials, paper summaries, weekly progress decks — all filesystem-driven, all cross-linked, all queryable by Claude.
 
 ## License
 

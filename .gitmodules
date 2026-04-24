@@ -1,0 +1,3 @@
+[submodule "docs/kb-vln"]
+	path = docs/kb-vln
+	url = https://github.com/jianzhou0420/kb-vln.git
