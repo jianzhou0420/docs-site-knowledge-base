@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-- Python 3.9 or newer.
-- Git (for cloning; not strictly required if you download a ZIP, but strongly recommended for version control of your own content).
+- **Conda** (Miniforge, Miniconda, or Anaconda). Install from [Miniforge](https://github.com/conda-forge/miniforge) if you don't have it.
+- **Git** (for cloning; recommended for version control of your own content).
 
 ## Clone
 
@@ -14,15 +14,15 @@ cd my-docs
 
 Or use the "Use this template" button on GitHub to create your own repo from this one.
 
-## Install dependencies
-
-Create a virtualenv (optional but recommended) and install the plugins.
+## Create the environment
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate       # Windows: .venv\Scripts\activate
+conda create -n my-docs python=3.11 -y
+conda activate my-docs
 pip install -r requirements.txt
 ```
+
+Name the env whatever you like (`docs`, `<project>-docs`, etc.) — the rest of the guide assumes you've activated it.
 
 `requirements.txt` pins the minimum versions:
 
