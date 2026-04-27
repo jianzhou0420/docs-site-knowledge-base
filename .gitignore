@@ -7,6 +7,9 @@ build/
 # MkDocs build output
 site/
 
+# Claude Code / oh-my-claudecode local cache
+.omc/
+
 # Virtualenvs
 .venv/
 venv/
