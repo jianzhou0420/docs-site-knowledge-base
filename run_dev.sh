@@ -46,4 +46,7 @@ EOF
 fi
 
 echo "Using mkdocs at: $MKDOCS"
-exec "$MKDOCS" serve -a 0.0.0.0:8002
+# --livereload is the documented default but mkdocs 1.6 silently skips
+# starting the file watcher when stdout is not a TTY (e.g. backgrounded
+# with `&`). Pass it explicitly so watchdog/inotify always engages.
+exec "$MKDOCS" serve --livereload -a 0.0.0.0:8002
