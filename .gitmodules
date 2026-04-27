@@ -7,3 +7,6 @@
 [submodule "docs/kb-vla"]
 	path = docs/kb-vla
 	url = https://github.com/jianzhou0420/kb-vla.git
+[submodule "docs/kb-conferences"]
+	path = docs/kb-conferences
+	url = https://github.com/jianzhou0420/kb-conferences.git
