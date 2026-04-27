@@ -1,3 +1,9 @@
 [submodule "docs/kb-vln"]
 	path = docs/kb-vln
 	url = https://github.com/jianzhou0420/kb-vln.git
+[submodule "docs/kb-eqa"]
+	path = docs/kb-eqa
+	url = https://github.com/jianzhou0420/kb-eqa.git
+[submodule "docs/kb-vla"]
+	path = docs/kb-vla
+	url = https://github.com/jianzhou0420/kb-vla.git
