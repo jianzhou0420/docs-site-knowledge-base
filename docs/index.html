@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Doc-Site</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab active" href="pages/guide/index.html">Guide</a>
+        <a class="tab" href="pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout no-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section"><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page" href="pages/guide/index.html">Guide</a>
+      <a class="sb-page" href="pages/guide/installation.html">Installation</a>
+      <a class="sb-page" href="pages/guide/quick-start.html">Quick Start</a>
+      <a class="sb-page" href="pages/guide/why.html">Why this pattern</a>
+      <a class="sb-page" href="pages/guide/conventions.html">Conventions</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body blueprint">
+  <div class="topbar">
+  <div class="crumbs">
+    <span class="here">My Doc-Site</span>
+  </div>
+  
+</div>
+  <h1>My Doc-Site</h1>
+
+<p>A scaffold for <strong>LLM-authored knowledge bases</strong> rendered as a fast,
+dependency-free static site. Drop source material in, ask Claude to organize and
+cross-link it, and read the result in your browser. No build step, no <code>pip</code>,
+no <code>npm</code> — just Python's standard library and a folder of HTML.</p>
+
+<p>You are reading the site right now. Every page here is both the manual for the
+scaffold and a live demonstration of how it lays out content.</p>
+
+<h2 id="start-here">Start here</h2>
+
+<ul>
+  <li><strong><a href="pages/guide/index.html">Guide</a></strong> — install, run, the conventions, and why the scaffold is shaped this way.</li>
+  <li><strong><a href="pages/recipes/index.html">Recipes</a></strong> — copy-paste how-tos for the common changes (add a page, add a tab, group the sidebar).</li>
+</ul>
+
+<h2 id="how-it-works">How it works in one paragraph</h2>
+
+<p>Navigation is <strong>filesystem-driven</strong>. Each directory under
+<code>docs/pages/</code> becomes a top tab; each <code>.html</code> file becomes a page.
+You author content inside a <code>&lt;main class="doc-body"&gt;</code> block, then run
+the wrap script — it regenerates the chrome (header, sidebar, breadcrumbs, on-this-page
+TOC, footer) from the current file tree. A tiny stdlib dev server live-reloads the
+browser as you edit. Branding lives in <code>docs/_site.json</code>; per-tab nav lives
+in <code>docs/pages/&lt;tab&gt;/_tab.json</code>. That's the whole system.</p>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+
+
+</div>
+
+<script src="assets/nav.js"></script>
+
+</body>
+</html>

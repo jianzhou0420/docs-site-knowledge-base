@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why this pattern — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab active" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page" href="../../pages/guide/index.html">Guide</a>
+      <a class="sb-page" href="../../pages/guide/installation.html">Installation</a>
+      <a class="sb-page" href="../../pages/guide/quick-start.html">Quick Start</a>
+      <a class="sb-page active" href="../../pages/guide/why.html">Why this pattern</a>
+      <a class="sb-page" href="../../pages/guide/conventions.html">Conventions</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body guide">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Guide</a>
+    <span class="sep">/</span>
+    <span class="here">Why this pattern</span>
+  </div>
+  
+</div>
+  <h1>Why this pattern</h1>
+
+<h2 id="the-problem-it-solves">The problem it solves</h2>
+
+<p>A conventional documentation site leans on a generator (MkDocs, Docusaurus, Hugo)
+plus a plugin ecosystem. That buys you a lot, but it also means a toolchain to install,
+a config to learn, a build step to run, and a dependency tree that drifts and breaks
+between machines and over time. For a personal, long-lived, LLM-authored knowledge base
+— where the author is usually Claude and the reader is usually you — that overhead earns
+little and costs upkeep.</p>
+
+<p>This scaffold takes the opposite bet: <strong>the rendered HTML is the source</strong>,
+and the only tooling is a few hundred lines of Python standard library.</p>
+
+<h2 id="what-this-template-does-instead">What this scaffold does instead</h2>
+
+<table>
+  <thead><tr><th>Concern</th><th>How it's handled</th></tr></thead>
+  <tbody>
+    <tr><td>Navigation</td><td><code>_lib/_nav.py</code> scans <code>docs/pages/</code>. Each directory is a tab; each <code>.html</code> file is a page. No central nav list.</td></tr>
+    <tr><td>Page chrome</td><td><code>_lib/_layout.py</code> renders one shared shell; <code>_lib/_wrap_handwritten.py</code> bakes it onto every authored <code>&lt;main&gt;</code>. Change the layout once, re-wrap, done.</td></tr>
+    <tr><td>Per-tab tweaks</td><td>An optional <code>_tab.json</code> per tab overrides label, ordering, and sidebar grouping — local to that tab, no global config.</td></tr>
+    <tr><td>Live preview</td><td><code>_lib/_serve.py</code>: stdlib HTTP + mtime polling + Server-Sent Events. No watchdog, no websocket library.</td></tr>
+    <tr><td>Dependencies</td><td>None. <code>python3</code> is the whole requirement.</td></tr>
+  </tbody>
+</table>
+
+<p>Result: <strong>adding content is a one-step action</strong> — create an HTML file,
+run the wrap script, commit.</p>
+
+<h2 id="the-tradeoffs-honest-version">The tradeoffs — honest version</h2>
+
+<ul>
+  <li><strong>You write HTML, not Markdown.</strong> No Markdown-to-HTML convenience, no fenced-code niceties out of the box. For an LLM author this is a non-issue — Claude emits HTML as readily as Markdown — but a human typing pages by hand will feel it.</li>
+  <li><strong>No plugin ecosystem.</strong> Search, diagrams, math, versioning — anything a mature generator ships as a plugin, you'd add yourself. The header has a placeholder search button that's intentionally a stub.</li>
+  <li><strong>The wrap step is manual.</strong> Chrome isn't regenerated on save; you run <code>_wrap_handwritten.py</code> after structural changes. The dev server reloads content live, but new pages/tabs need a wrap to get their chrome.</li>
+  <li><strong>You own the CSS.</strong> Theming is a single <code>assets/style.css</code> you edit directly, not a configured theme. More control, more rope.</li>
+</ul>
+
+<h2 id="when-this-pattern-shines">When this pattern shines</h2>
+
+<ul>
+  <li><strong>LLM-authored knowledge bases</strong> — Claude writes HTML directly into <code>pages/</code>; you read the result.</li>
+  <li><strong>Long-lived personal sites</strong> where "still builds in three years with zero dependency rot" matters more than a rich plugin set.</li>
+  <li><strong>Air-gapped or minimal environments</strong> — if it has Python, it runs.</li>
+</ul>
+
+<h2 id="when-it-doesnt">When it doesn't</h2>
+
+<ul>
+  <li><strong>Human-authored docs</strong> where Markdown ergonomics and a copy-button-on-code-blocks experience matter — reach for MkDocs Material.</li>
+  <li><strong>You need full-text search, i18n, or versioned docs today</strong> — those come free in mature generators and would be real work here.</li>
+  <li><strong>A large team</strong> that wants a single auditable nav file and a CI-enforced build contract.</li>
+</ul>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#the-problem-it-solves">The problem it solves</a>
+      <a class="toc-h2" href="#what-this-template-does-instead">What this scaffold does instead</a>
+      <a class="toc-h2" href="#the-tradeoffs-honest-version">The tradeoffs — honest version</a>
+      <a class="toc-h2" href="#when-this-pattern-shines">When this pattern shines</a>
+      <a class="toc-h2" href="#when-it-doesnt">When it doesn't</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conventions — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab active" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page" href="../../pages/guide/index.html">Guide</a>
+      <a class="sb-page" href="../../pages/guide/installation.html">Installation</a>
+      <a class="sb-page" href="../../pages/guide/quick-start.html">Quick Start</a>
+      <a class="sb-page" href="../../pages/guide/why.html">Why this pattern</a>
+      <a class="sb-page active" href="../../pages/guide/conventions.html">Conventions</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body guide">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Guide</a>
+    <span class="sep">/</span>
+    <span class="here">Conventions</span>
+  </div>
+  
+</div>
+  <h1>Conventions</h1>
+
+<p>The operating rules for this scaffold. Read once, apply mechanically thereafter.</p>
+
+<h2 id="filesystem-is-the-nav">1. The filesystem IS the nav</h2>
+
+<p>Every directory under <code>docs/pages/</code> becomes a top tab. Every
+<code>.html</code> file becomes a page. <strong>You never maintain a central nav
+list.</strong></p>
+
+<ul>
+  <li>Drop a new directory <code>docs/pages/&lt;x&gt;/</code> with an <code>index.html</code> → a new tab appears.</li>
+  <li>Drop a new <code>.html</code> file into a tab → a new sidebar entry appears.</li>
+  <li>Move or rename a file → its nav entry and URL move with it.</li>
+</ul>
+
+<p>Directories and files whose names start with <code>_</code> or <code>.</code> are
+skipped by the scanner — that's how <code>_lib/</code>, <code>_tab.json</code>, and
+<code>_site.json</code> stay out of the nav.</p>
+
+<h2 id="tab-json-is-for-overrides-only">2. <code>_tab.json</code> is for overrides only</h2>
+
+<p>Each tab may carry a <code>docs/pages/&lt;tab&gt;/_tab.json</code>. It never
+<em>adds</em> pages — it only adjusts how discovered pages are presented. All fields are
+optional:</p>
+
+<table>
+  <thead><tr><th>Field</th><th>Effect</th></tr></thead>
+  <tbody>
+    <tr><td><code>label</code></td><td>Tab text in the header (default: title-cased directory name).</td></tr>
+    <tr><td><code>key</code></td><td>CSS accent class for the tab (default: directory name).</td></tr>
+    <tr><td><code>landing</code></td><td>Page the tab opens to, relative to the tab dir (default: <code>index.html</code>).</td></tr>
+    <tr><td><code>order_priority</code></td><td>Smaller = further left in the tab strip (default: 100).</td></tr>
+    <tr><td><code>sections</code></td><td>Curated sidebar groups (see §6). Omit to auto-discover one section per subdirectory.</td></tr>
+    <tr><td><code>external_layout</code></td><td><code>true</code> = the tab's pages own their chrome; the wrap script leaves them alone (see §10).</td></tr>
+  </tbody>
+</table>
+
+<p>If alphabetical order is fine and the directory name title-cases well, skip the file
+entirely.</p>
+
+<h2 id="two-to-five-tabs">3. Two-to-five tabs is the sweet spot</h2>
+
+<p>One tab feels undercooked; six or more crowds the bar. Pick 2–5 top-level
+directories. Tab order is by <code>order_priority</code> (then directory name) — set it
+explicitly in each <code>_tab.json</code> rather than relying on the default.</p>
+
+<h2 id="root-landing">4. The root landing is <code>docs/index.html</code></h2>
+
+<p>The bare URL <code>/</code> serves <code>docs/index.html</code> directly — there is no
+redirect plugin and no magic. Edit that file to be your welcome page, or replace its body
+with a link hub. It is wrapped with the same chrome as every other page (its breadcrumb
+root is the site name; its right-TOC is suppressed).</p>
+
+<h2 id="author-the-main-block">5. Author inside <code>&lt;main class="doc-body"&gt;</code></h2>
+
+<p>Every page you write is a normal HTML document whose authored content lives in a single
+<code>&lt;main class="doc-body"&gt;…&lt;/main&gt;</code> block, with a <code>&lt;title&gt;</code>
+in the head. The wrap script extracts exactly that block and re-renders the full page
+around it. Rules that make a page behave:</p>
+
+<ul>
+  <li>The <code>&lt;title&gt;</code> sets the browser title and the sidebar/breadcrumb label. Don't add the site-name suffix yourself — the wrapper does.</li>
+  <li>Give section headings an <code>id</code> (<code>&lt;h2 id="overview"&gt;</code>). The on-this-page TOC is built from <code>&lt;h2 id&gt;</code> and <code>&lt;h3 id&gt;</code>.</li>
+  <li>Page-specific <code>&lt;style&gt;</code> in the head and trailing <code>&lt;script&gt;</code> blocks are preserved across re-wraps.</li>
+</ul>
+
+<h2 id="bake-the-chrome">6. Bake the chrome after structural changes</h2>
+
+<p>The dev server reloads <em>content</em> live, but the header/sidebar/breadcrumbs/TOC
+are baked in at author time. After you add, move, rename, or retitle a page — or change
+the layout, branding, or a <code>_tab.json</code> — re-run:</p>
+
+<pre><code>python3 docs/_lib/_wrap_handwritten.py</code></pre>
+
+<p>It is <strong>idempotent</strong>: running it twice produces no further change, and it
+won't double-escape titles or stack footers. A page is recognised by its
+<code>&lt;main class="doc-body"&gt;</code> block, so the operation is safe to repeat.</p>
+
+<h3 id="curated-sidebar-sections">Curated sidebar sections</h3>
+
+<p>A tab's sidebar is built from its <code>sections</code>. Each section names a directory
+(relative to the tab) and may pin an <code>order</code> of file stems:</p>
+
+<pre><code>"sections": [
+  {"label": "Getting Started", "dir": "getting-started", "key": "guide"},
+  {"label": "Reference", "dir": "reference", "key": "guide",
+   "order": ["concepts", "api"]}
+]</code></pre>
+
+<p>A section with <code>"dir": ""</code> points at the tab root itself — that's how a flat
+tab (files directly under the tab dir, no subfolders) renders a sidebar, as both tabs in
+this site do. Omit <code>sections</code> entirely and the scanner auto-creates one section
+per subdirectory.</p>
+
+<h2 id="assets-and-lib-are-invisible">7. <code>assets/</code> and <code>_lib/</code> are invisible to the nav</h2>
+
+<p>The scanner only looks under <code>docs/pages/</code>, and skips <code>_</code>/<code>.</code>
+names. So <code>docs/assets/</code> (CSS/JS/images), <code>docs/_lib/</code> (the engine),
+and the <code>_*.json</code> config files never become tabs. Reference assets with a path
+relative to the page; the wrap script computes the correct <code>../</code> prefix for the
+layout's own asset links.</p>
+
+<h2 id="cross-page-links">8. Cross-page links use relative paths</h2>
+
+<p>Link between pages with ordinary relative hrefs ending in <code>.html</code>:</p>
+
+<pre><code>&lt;a href="../recipes/add-a-tab.html"&gt;Add a tab&lt;/a&gt;</code></pre>
+
+<p>When you move a directory, cross-boundary links break. There's no strict-build checker
+shipped, so grep for the old path after a move:
+<code>grep -rn 'old-folder/' docs/pages/</code>.</p>
+
+<h2 id="branding-lives-in-site-json">9. Branding lives in <code>docs/_site.json</code></h2>
+
+<p>Site name, tagline, footer, and logo target are read from <code>_site.json</code> by
+the layout and nav code — never hardcode them in <code>_lib/</code>. Change the name there,
+re-wrap, and the logo, <code>&lt;title&gt;</code> suffix, breadcrumb root, and footer all
+update together.</p>
+
+<h2 id="external-layout-for-self-chromed-pages">10. <code>external_layout</code> for self-chromed pages</h2>
+
+<p>Some pages own their full markup — a Reveal.js deck, a generated report, an embedded
+app. Mark their tab with <code>"external_layout": true</code> in <code>_tab.json</code>;
+the wrap script then skips that tab entirely, leaving its HTML untouched while the tab
+still appears in the header. See <a href="../recipes/include-html-deck.html">Recipes → Include an HTML deck</a>.</p>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#filesystem-is-the-nav">1. The filesystem IS the nav</a>
+      <a class="toc-h2" href="#tab-json-is-for-overrides-only">2. _tab.json is for overrides only</a>
+      <a class="toc-h2" href="#two-to-five-tabs">3. Two-to-five tabs is the sweet spot</a>
+      <a class="toc-h2" href="#root-landing">4. The root landing is docs/index.html</a>
+      <a class="toc-h2" href="#author-the-main-block">5. Author inside &lt;main class="doc-body"&gt;</a>
+      <a class="toc-h2" href="#bake-the-chrome">6. Bake the chrome after structural changes</a>
+      <a class="toc-h3" href="#curated-sidebar-sections">Curated sidebar sections</a>
+      <a class="toc-h2" href="#assets-and-lib-are-invisible">7. assets/ and _lib/ are invisible to the nav</a>
+      <a class="toc-h2" href="#cross-page-links">8. Cross-page links use relative paths</a>
+      <a class="toc-h2" href="#branding-lives-in-site-json">9. Branding lives in docs/_site.json</a>
+      <a class="toc-h2" href="#external-layout-for-self-chromed-pages">10. external_layout for self-chromed pages</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

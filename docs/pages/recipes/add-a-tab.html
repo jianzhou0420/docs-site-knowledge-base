@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add a tab — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab active" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Recipes</summary><div class="sb-pages"><a class="sb-page" href="../../pages/recipes/index.html">Recipes</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-page.html">Add a page</a>
+      <a class="sb-page active" href="../../pages/recipes/add-a-tab.html">Add a tab</a>
+      <a class="sb-page" href="../../pages/recipes/rename-a-tab.html">Rename a tab</a>
+      <a class="sb-page" href="../../pages/recipes/include-html-deck.html">Include an HTML deck</a>
+      <a class="sb-page" href="../../pages/recipes/virtual-subsections.html">Sidebar sections &amp; sub-sections</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body designdoc">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Recipes</a>
+    <span class="sep">/</span>
+    <span class="here">Add a tab</span>
+  </div>
+  
+</div>
+  <h1>Add a tab</h1>
+
+<h2 id="minimum-steps">Minimum steps</h2>
+
+<p>Create a directory under <code>docs/pages/</code> with at least an
+<code>index.html</code> (any page with a <code>&lt;main class="doc-body"&gt;</code> block):</p>
+
+<pre><code>mkdir docs/pages/reference
+# author docs/pages/reference/index.html
+python3 docs/_lib/_wrap_handwritten.py</code></pre>
+
+<p>Refresh. A <strong>Reference</strong> tab appears in the top bar. A tab with no
+serveable page is silently skipped, so the directory must contain an <code>index.html</code>
+(or set a <code>landing</code> in <code>_tab.json</code> pointing at one that exists).</p>
+
+<h2 id="controlling-tab-order">Controlling tab order</h2>
+
+<p>Tabs sort by <code>order_priority</code> (smaller is further left), then by directory
+name. Set it in the new tab's <code>_tab.json</code>:</p>
+
+<pre><code>{
+  "label": "Reference",
+  "order_priority": 30
+}</code></pre>
+
+<h2 id="giving-the-tab-a-non-slug-label">Giving the tab a non-slug label</h2>
+
+<p>The directory name determines the URL (<code>/pages/reference/...</code>). The label
+shown in the header defaults to the title-cased directory name; override it with
+<code>label</code>:</p>
+
+<pre><code>{
+  "label": "API Reference",
+  "order_priority": 30
+}</code></pre>
+
+<p>Result: the URL stays at <code>pages/reference/...</code>, the tab reads "API
+Reference".</p>
+
+<h2 id="picking-an-accent-color">Picking an accent color</h2>
+
+<p>The <code>key</code> field selects a CSS accent class from
+<code>docs/assets/style.css</code> (e.g. <code>guide</code>, <code>designdoc</code>,
+<code>capability</code>, <code>research</code>, <code>architecture</code>). Pick one, or
+add your own accent variables to the stylesheet:</p>
+
+<pre><code>{
+  "label": "API Reference",
+  "key": "architecture",
+  "order_priority": 30
+}</code></pre>
+
+<h2 id="giving-the-tab-a-sidebar">Giving the tab a sidebar</h2>
+
+<p>A tab only renders sidebar entries for pages inside its <code>sections</code>. For a
+flat tab (files directly in the tab dir), add one section pointing at the tab root with
+<code>"dir": ""</code>:</p>
+
+<pre><code>{
+  "label": "API Reference",
+  "order_priority": 30,
+  "sections": [
+    {"label": "Reference", "dir": "", "key": "architecture"}
+  ]
+}</code></pre>
+
+<p>For a tab organized into subdirectories, either list a section per subdir or omit
+<code>sections</code> to auto-discover them. See
+<a href="virtual-subsections.html">Sidebar sections &amp; sub-sections</a>.</p>
+
+<h2 id="removing-a-tab">Removing a tab</h2>
+
+<p>Delete the directory and re-run the wrap script. Any links that pointed into it will
+now 404 — grep for the old path to find them:
+<code>grep -rn 'pages/reference/' docs/</code>.</p>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#minimum-steps">Minimum steps</a>
+      <a class="toc-h2" href="#controlling-tab-order">Controlling tab order</a>
+      <a class="toc-h2" href="#giving-the-tab-a-non-slug-label">Giving the tab a non-slug label</a>
+      <a class="toc-h2" href="#picking-an-accent-color">Picking an accent color</a>
+      <a class="toc-h2" href="#giving-the-tab-a-sidebar">Giving the tab a sidebar</a>
+      <a class="toc-h2" href="#removing-a-tab">Removing a tab</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

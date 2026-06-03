@@ -1,0 +1,14 @@
+{
+  "label": "Recipes",
+  "key": "designdoc",
+  "landing": "index.html",
+  "order_priority": 20,
+  "sections": [
+    {
+      "label": "Recipes",
+      "dir": "",
+      "key": "designdoc",
+      "order": ["index", "add-a-page", "add-a-tab", "rename-a-tab", "include-html-deck", "virtual-subsections"]
+    }
+  ]
+}

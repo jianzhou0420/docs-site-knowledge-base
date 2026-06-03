@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab active" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page active" href="../../pages/guide/index.html">Guide</a>
+      <a class="sb-page" href="../../pages/guide/installation.html">Installation</a>
+      <a class="sb-page" href="../../pages/guide/quick-start.html">Quick Start</a>
+      <a class="sb-page" href="../../pages/guide/why.html">Why this pattern</a>
+      <a class="sb-page" href="../../pages/guide/conventions.html">Conventions</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body guide">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <span class="here">Guide</span>
+  </div>
+  
+</div>
+  <h1>Guide</h1>
+
+<p>You are reading a doc-site that documents itself. The site you are browsing right
+now is the template — every page is both the manual for the scaffold and a live
+demonstration of how it organizes content.</p>
+
+<h2 id="what-this-template-gives-you">What this template gives you</h2>
+
+<ul>
+  <li><strong>Zero dependencies.</strong> Pure Python standard library — no <code>pip</code>, no <code>npm</code>, no build step. If you have <code>python3</code>, you can run it.</li>
+  <li><strong>Filesystem-driven nav.</strong> Each directory under <code>docs/pages/</code> becomes a tab; each <code>.html</code> file becomes a page. Drop a file in, it appears.</li>
+  <li><strong>Author content, not chrome.</strong> You write a <code>&lt;main class="doc-body"&gt;</code> block; the wrap script regenerates the header, sidebar, breadcrumbs, on-this-page TOC, and footer for you.</li>
+  <li><strong>Live-reload dev server.</strong> A stdlib HTTP server watches the tree and pushes a browser reload over Server-Sent Events when anything changes.</li>
+  <li><strong>One config file for branding</strong> (<code>docs/_site.json</code>) and one per tab for nav (<code>_tab.json</code>).</li>
+</ul>
+
+<h2 id="where-to-go-next">Where to go next</h2>
+
+<ol>
+  <li><a href="installation.html">Installation</a> — get the template running locally.</li>
+  <li><a href="quick-start.html">Quick Start</a> — make your first edits.</li>
+  <li><a href="why.html">Why this pattern</a> — the rationale in one page.</li>
+  <li><a href="conventions.html">Conventions</a> — the operating rules you'll reference daily.</li>
+</ol>
+
+<p>Recipes for common tasks live under the <a href="../recipes/index.html">Recipes</a> tab.</p>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#what-this-template-gives-you">What this template gives you</a>
+      <a class="toc-h2" href="#where-to-go-next">Where to go next</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

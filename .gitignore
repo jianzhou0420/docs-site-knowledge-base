@@ -4,7 +4,7 @@ __pycache__/
 dist/
 build/
 
-# MkDocs build output
+# Static export dir, if you ever copy docs/ out to one
 site/
 
 # Claude Code / oh-my-claudecode local cache
@@ -26,3 +26,8 @@ Thumbs.db
 # Credentials / env
 .env
 *.env.local
+
+# Claude Code / agent workflow — this is a standalone docs template; the
+# Claude collaboration scaffolding is local-only and not part of the template.
+.claude/
+/CLAUDE.md

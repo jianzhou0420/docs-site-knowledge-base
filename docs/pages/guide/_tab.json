@@ -1,0 +1,14 @@
+{
+  "label": "Guide",
+  "key": "guide",
+  "landing": "index.html",
+  "order_priority": 10,
+  "sections": [
+    {
+      "label": "Guide",
+      "dir": "",
+      "key": "guide",
+      "order": ["index", "installation", "quick-start", "why", "conventions"]
+    }
+  ]
+}

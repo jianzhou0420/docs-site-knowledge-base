@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick Start — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab active" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page" href="../../pages/guide/index.html">Guide</a>
+      <a class="sb-page" href="../../pages/guide/installation.html">Installation</a>
+      <a class="sb-page active" href="../../pages/guide/quick-start.html">Quick Start</a>
+      <a class="sb-page" href="../../pages/guide/why.html">Why this pattern</a>
+      <a class="sb-page" href="../../pages/guide/conventions.html">Conventions</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body guide">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Guide</a>
+    <span class="sep">/</span>
+    <span class="here">Quick Start</span>
+  </div>
+  
+</div>
+  <h1>Quick Start</h1>
+
+<p>Assumes you have <a href="installation.html">installed</a> the template and are
+running <code>./run_dev.sh</code>.</p>
+
+<h2 id="rename-the-site">1. Rename the site</h2>
+
+<p>Open <code>docs/_site.json</code> and edit the branding:</p>
+
+<pre><code>{
+  "site_name": "My Project Docs",
+  "tagline": "Short tagline",
+  "footer": "My Project Docs",
+  "logo_href": "index.html"
+}</code></pre>
+
+<p>The <code>site_name</code> drives the header logo, the <code>&lt;title&gt;</code>
+suffix, and (unless you override <code>footer</code>) the footer text. After editing,
+re-bake the chrome so every page picks up the change:</p>
+
+<pre><code>python3 docs/_lib/_wrap_handwritten.py</code></pre>
+
+<h2 id="edit-the-landing-page">2. Edit the landing page</h2>
+
+<p>The root URL <code>/</code> serves <code>docs/index.html</code>. Open it and replace
+the content inside <code>&lt;main class="doc-body"&gt;…&lt;/main&gt;</code> with your
+project's welcome text. Leave the <code>&lt;main&gt;</code> wrapper in place — the wrap
+script keys off it.</p>
+
+<h2 id="add-content">3. Add content</h2>
+
+<h3 id="add-a-page">Add a page</h3>
+
+<p>Create an HTML file inside a tab directory with a <code>&lt;title&gt;</code> and a
+<code>&lt;main class="doc-body"&gt;</code> block:</p>
+
+<pre><code>cat &gt; docs/pages/guide/architecture.html &lt;&lt;'EOF'
+&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;Architecture&lt;/title&gt;&lt;/head&gt;&lt;body&gt;
+&lt;main class="doc-body"&gt;
+&lt;h1&gt;Architecture&lt;/h1&gt;
+&lt;h2 id="overview"&gt;Overview&lt;/h2&gt;
+&lt;p&gt;…&lt;/p&gt;
+&lt;/main&gt;&lt;/body&gt;&lt;/html&gt;
+EOF
+python3 docs/_lib/_wrap_handwritten.py</code></pre>
+
+<p>Refresh the browser — the page appears in the <strong>Guide</strong> sidebar.
+Headings with an <code>id</code> attribute (<code>&lt;h2 id="overview"&gt;</code>)
+automatically populate the on-this-page TOC on the right.</p>
+
+<h3 id="control-the-order">Control the order</h3>
+
+<p>By default sidebar pages sort alphabetically (with <code>index.html</code> first).
+To pin a custom order, list the file stems in the tab's
+<code>docs/pages/guide/_tab.json</code>:</p>
+
+<pre><code>"order": ["index", "installation", "architecture", "quick-start", "why", "conventions"]</code></pre>
+
+<h3 id="add-a-tab">Add a tab</h3>
+
+<p>Create a new directory under <code>docs/pages/</code> with at least an
+<code>index.html</code>:</p>
+
+<pre><code>mkdir docs/pages/reference
+# author docs/pages/reference/index.html with a &lt;main class="doc-body"&gt; block
+python3 docs/_lib/_wrap_handwritten.py</code></pre>
+
+<p>A <strong>Reference</strong> tab appears. See <a href="../recipes/add-a-tab.html">Recipes → Add a tab</a> for labels, ordering, and sidebar sections.</p>
+
+<h2 id="ship">4. Ship</h2>
+
+<p>There's no build. Copy <code>docs/</code> to any static host. See
+<a href="installation.html#deploy">Installation → Deploy</a>.</p>
+
+<h2 id="next">Next</h2>
+
+<ul>
+  <li><a href="why.html">Why this pattern</a> — understand the tradeoffs before deviating.</li>
+  <li><a href="conventions.html">Conventions</a> — the full ruleset.</li>
+  <li><a href="../recipes/index.html">Recipes</a> — common tasks with worked examples.</li>
+</ul>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#rename-the-site">1. Rename the site</a>
+      <a class="toc-h2" href="#edit-the-landing-page">2. Edit the landing page</a>
+      <a class="toc-h2" href="#add-content">3. Add content</a>
+      <a class="toc-h3" href="#add-a-page">Add a page</a>
+      <a class="toc-h3" href="#control-the-order">Control the order</a>
+      <a class="toc-h3" href="#add-a-tab">Add a tab</a>
+      <a class="toc-h2" href="#ship">4. Ship</a>
+      <a class="toc-h2" href="#next">Next</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

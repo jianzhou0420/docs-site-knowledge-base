@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installation — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab active" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page" href="../../pages/guide/index.html">Guide</a>
+      <a class="sb-page active" href="../../pages/guide/installation.html">Installation</a>
+      <a class="sb-page" href="../../pages/guide/quick-start.html">Quick Start</a>
+      <a class="sb-page" href="../../pages/guide/why.html">Why this pattern</a>
+      <a class="sb-page" href="../../pages/guide/conventions.html">Conventions</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body guide">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Guide</a>
+    <span class="sep">/</span>
+    <span class="here">Installation</span>
+  </div>
+  
+</div>
+  <h1>Installation</h1>
+
+<h2 id="no-environment-to-install">There is no environment to install</h2>
+
+<p>This is the headline feature: <strong>zero dependencies</strong>. The dev server and
+the wrap script are written entirely against the Python standard library, so there is
+<strong>no <code>pip install</code>, no <code>conda</code> environment, no <code>npm</code>,
+and no build step</strong>. Nothing to pin, nothing to keep in sync, nothing to rot — if a
+machine has <code>python3</code>, it can serve this site, today and in three years.</p>
+
+<p>Concretely, getting from clone to a running site is two commands:</p>
+
+<pre><code>git clone https://github.com/jianzhou0420/docs-site-knowledge-base.git my-docs
+cd my-docs &amp;&amp; ./run_dev.sh</code></pre>
+
+<p>For contrast, the generator-based predecessor of this scaffold required a
+<code>conda create</code> plus <code>pip install -r requirements.txt</code> (MkDocs,
+the theme, and several nav/redirect plugins) — and broke when a transitive dependency
+drifted. That entire class of setup and upkeep is gone.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li><strong>Python 3.8+</strong> on your <code>PATH</code> — the <em>only</em> requirement. The dev server and wrap script are pure standard library, so there is nothing to <code>pip install</code>. If your interpreter isn't named <code>python3</code>, point at it with <code>PYTHON=/path/to/python ./run_dev.sh</code>.</li>
+  <li><strong>Git</strong> — for cloning, and recommended for version-controlling your own content.</li>
+</ul>
+
+<h2 id="clone">Clone</h2>
+
+<pre><code>git clone https://github.com/jianzhou0420/docs-site-knowledge-base.git my-docs
+cd my-docs</code></pre>
+
+<p>Or use the "Use this template" button on GitHub to create your own repo from this one.
+There are no submodules to recurse and no environment to create.</p>
+
+<h2 id="serve-locally">Serve locally</h2>
+
+<pre><code>./run_dev.sh</code></pre>
+
+<p>This launches the stdlib live-reload server (<code>docs/_lib/_serve.py</code>) on
+<a href="http://0.0.0.0:8002">http://0.0.0.0:8002</a>. It serves <code>docs/</code>
+directly — there is no compiled output. Edit any file and the browser reloads within
+about half a second.</p>
+
+<p>Override host, port, or poll interval:</p>
+
+<pre><code>./run_dev.sh 9000                  # custom port
+HOST=127.0.0.1 ./run_dev.sh        # bind localhost only
+INTERVAL=1.0 ./run_dev.sh          # slower file-watch poll (default 0.5s)</code></pre>
+
+<h2 id="deploy">Deploy</h2>
+
+<p>Because the site <em>is</em> the static output, deploying is just copying
+<code>docs/</code> to any static host (GitHub Pages, Netlify, S3, nginx). The
+<code>_lib/</code> Python is only used at authoring time; you can exclude it from the
+upload, or leave it — browsers ignore <code>.py</code> files.</p>
+
+<h2 id="uninstall">Uninstall</h2>
+
+<p>Delete the clone. No system-wide state is created.</p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<ul>
+  <li><strong>"python3: command not found"</strong> — install Python 3, or edit <code>run_dev.sh</code> to point at your interpreter.</li>
+  <li><strong>Port already in use</strong> — pass a different port: <code>./run_dev.sh 9000</code>.</li>
+  <li><strong>A page shows no sidebar or wrong title</strong> — re-run the wrap script: <code>python3 docs/_lib/_wrap_handwritten.py</code>. See <a href="conventions.html#bake-the-chrome">Conventions § Bake the chrome</a>.</li>
+  <li><strong>Edits don't reload</strong> — the watcher ignores dotfiles and <code>__pycache__</code>; make sure you're editing a tracked <code>.html</code>/<code>.css</code>/<code>.js</code> file under <code>docs/</code>.</li>
+</ul>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#no-environment-to-install">There is no environment to install</a>
+      <a class="toc-h2" href="#prerequisites">Prerequisites</a>
+      <a class="toc-h2" href="#clone">Clone</a>
+      <a class="toc-h2" href="#serve-locally">Serve locally</a>
+      <a class="toc-h2" href="#deploy">Deploy</a>
+      <a class="toc-h2" href="#uninstall">Uninstall</a>
+      <a class="toc-h2" href="#troubleshooting">Troubleshooting</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

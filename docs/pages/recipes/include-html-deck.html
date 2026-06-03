@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Include an HTML deck — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab active" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Recipes</summary><div class="sb-pages"><a class="sb-page" href="../../pages/recipes/index.html">Recipes</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-page.html">Add a page</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-tab.html">Add a tab</a>
+      <a class="sb-page" href="../../pages/recipes/rename-a-tab.html">Rename a tab</a>
+      <a class="sb-page active" href="../../pages/recipes/include-html-deck.html">Include an HTML deck</a>
+      <a class="sb-page" href="../../pages/recipes/virtual-subsections.html">Sidebar sections &amp; sub-sections</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body designdoc">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Recipes</a>
+    <span class="sep">/</span>
+    <span class="here">Include an HTML deck</span>
+  </div>
+  
+</div>
+  <h1>Include an HTML deck</h1>
+
+<p>Rendered slide decks (Reveal.js, Marp, PowerPoint → HTML export) and other
+self-contained pages own their own full markup. You don't want the wrap script injecting
+the site chrome into the middle of a deck. The mechanism for that is
+<strong><code>external_layout</code></strong>.</p>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p>A tab marked <code>"external_layout": true</code> in its <code>_tab.json</code> still
+appears in the header, but the wrap script <strong>skips every page inside it</strong> —
+the files are served exactly as authored. Use this for any tab whose pages are not
+<code>&lt;main class="doc-body"&gt;</code> documents.</p>
+
+<h2 id="steps">Steps</h2>
+
+<ol>
+  <li>Create the tab directory and drop your decks in:
+    <pre><code>mkdir docs/pages/decks
+cp ~/exports/q1-review.html docs/pages/decks/index.html
+cp ~/exports/pitch.html      docs/pages/decks/pitch.html</code></pre>
+  </li>
+  <li>Mark it external in <code>docs/pages/decks/_tab.json</code>:
+    <pre><code>{
+  "label": "Decks",
+  "key": "research",
+  "landing": "index.html",
+  "order_priority": 40,
+  "external_layout": true,
+  "sections": []
+}</code></pre>
+  </li>
+  <li>Re-run the wrap script. It reports the decks tab as skipped (by design) and leaves
+    those files byte-for-byte intact:
+    <pre><code>python3 docs/_lib/_wrap_handwritten.py</code></pre>
+  </li>
+</ol>
+
+<p>Clicking the <strong>Decks</strong> tab opens <code>index.html</code> as-is; the deck
+controls its own navigation.</p>
+
+<h2 id="linking-to-a-deck">Linking to a deck from a normal page</h2>
+
+<pre><code>&lt;p&gt;Watch the &lt;a href="../decks/q1-review.html"&gt;Q1 review deck&lt;/a&gt;.&lt;/p&gt;</code></pre>
+
+<h2 id="notes">Notes</h2>
+
+<ul>
+  <li><strong>Source files</strong> (<code>.pptx</code>, <code>.key</code>) don't belong under <code>docs/</code> — they won't render and they bloat the repo. Keep them elsewhere and commit only the exported HTML.</li>
+  <li><strong>Embedded media</strong> in a deck inflates page weight; the dev server's no-cache headers mean large decks reload slowly. Keep them lean where you can.</li>
+  <li>The <code>external_layout</code> flag is per <em>tab</em>, not per page. If you want one normal page plus some self-chromed pages, put the self-chromed ones in their own tab.</li>
+</ul>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#how-it-works">How it works</a>
+      <a class="toc-h2" href="#steps">Steps</a>
+      <a class="toc-h2" href="#linking-to-a-deck">Linking to a deck from a normal page</a>
+      <a class="toc-h2" href="#notes">Notes</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

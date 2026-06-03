@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add a page — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab active" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Recipes</summary><div class="sb-pages"><a class="sb-page" href="../../pages/recipes/index.html">Recipes</a>
+      <a class="sb-page active" href="../../pages/recipes/add-a-page.html">Add a page</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-tab.html">Add a tab</a>
+      <a class="sb-page" href="../../pages/recipes/rename-a-tab.html">Rename a tab</a>
+      <a class="sb-page" href="../../pages/recipes/include-html-deck.html">Include an HTML deck</a>
+      <a class="sb-page" href="../../pages/recipes/virtual-subsections.html">Sidebar sections &amp; sub-sections</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body designdoc">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Recipes</a>
+    <span class="sep">/</span>
+    <span class="here">Add a page</span>
+  </div>
+  
+</div>
+  <h1>Add a page</h1>
+
+<h2 id="minimum-steps">Minimum steps</h2>
+
+<p>Create an HTML file inside a tab directory. The only requirements are a
+<code>&lt;title&gt;</code> and a <code>&lt;main class="doc-body"&gt;</code> block:</p>
+
+<pre><code>cat &gt; docs/pages/guide/new-page.html &lt;&lt;'EOF'
+&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;New page&lt;/title&gt;&lt;/head&gt;&lt;body&gt;
+&lt;main class="doc-body"&gt;
+&lt;h1&gt;New page&lt;/h1&gt;
+&lt;p&gt;…&lt;/p&gt;
+&lt;/main&gt;&lt;/body&gt;&lt;/html&gt;
+EOF
+python3 docs/_lib/_wrap_handwritten.py</code></pre>
+
+<p>Refresh the dev server. The page appears in the <strong>Guide</strong> sidebar. No
+other changes needed — the wrap script gives it the header, sidebar, breadcrumbs, and
+footer automatically.</p>
+
+<h2 id="controlling-position">Controlling position</h2>
+
+<p>By default, new pages sort alphabetically (with <code>index.html</code> first). To pin
+a slot, add the file's stem to the <code>order</code> list in the tab's
+<code>_tab.json</code> section:</p>
+
+<pre><code>"order": ["index", "installation", "new-page", "quick-start", "why", "conventions"]</code></pre>
+
+<p>Stems not listed in <code>order</code> fall to the bottom, alphabetically.</p>
+
+<h2 id="the-title-and-toc">The title and the on-this-page TOC</h2>
+
+<p>The sidebar label and breadcrumb come from the <code>&lt;title&gt;</code> tag (the
+site-name suffix is added for you — don't type it). The on-this-page TOC on the right is
+built from headings that carry an <code>id</code>:</p>
+
+<pre><code>&lt;h2 id="overview"&gt;Overview&lt;/h2&gt;
+&lt;h3 id="details"&gt;Details&lt;/h3&gt;</code></pre>
+
+<p>Headings without an <code>id</code> are skipped by the TOC.</p>
+
+<h2 id="linking-to-it">Linking to it</h2>
+
+<p>From another page in the same tab:</p>
+
+<pre><code>&lt;a href="new-page.html"&gt;New page&lt;/a&gt;</code></pre>
+
+<p>From a different tab:</p>
+
+<pre><code>&lt;a href="../guide/new-page.html"&gt;New page&lt;/a&gt;</code></pre>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#minimum-steps">Minimum steps</a>
+      <a class="toc-h2" href="#controlling-position">Controlling position</a>
+      <a class="toc-h2" href="#the-title-and-toc">The title and the on-this-page TOC</a>
+      <a class="toc-h2" href="#linking-to-it">Linking to it</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

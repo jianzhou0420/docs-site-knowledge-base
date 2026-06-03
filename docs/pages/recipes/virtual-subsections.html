@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sidebar sections &amp; sub-sections — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab active" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Recipes</summary><div class="sb-pages"><a class="sb-page" href="../../pages/recipes/index.html">Recipes</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-page.html">Add a page</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-tab.html">Add a tab</a>
+      <a class="sb-page" href="../../pages/recipes/rename-a-tab.html">Rename a tab</a>
+      <a class="sb-page" href="../../pages/recipes/include-html-deck.html">Include an HTML deck</a>
+      <a class="sb-page active" href="../../pages/recipes/virtual-subsections.html">Sidebar sections &amp; sub-sections</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body designdoc">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Recipes</a>
+    <span class="sep">/</span>
+    <span class="here">Sidebar sections &amp; sub-sections</span>
+  </div>
+  
+</div>
+  <h1>Sidebar sections &amp; sub-sections</h1>
+
+<p>The left sidebar of a tab is built from its <code>sections</code> (declared in
+<code>_tab.json</code>) plus the actual subdirectory tree on disk. This recipe shows the
+three shapes you'll reach for.</p>
+
+<h2 id="flat-tab-one-section">Flat tab, one section</h2>
+
+<p>Files live directly in the tab directory, no subfolders. Point one section at the tab
+root with <code>"dir": ""</code> and pin the order. Both tabs in this site use this
+shape:</p>
+
+<pre><code>{
+  "label": "Guide",
+  "sections": [
+    {"label": "Guide", "dir": "", "key": "guide",
+     "order": ["index", "installation", "quick-start", "why", "conventions"]}
+  ]
+}</code></pre>
+
+<h2 id="grouped-by-subdirectory">Grouped by subdirectory</h2>
+
+<p>Organize files into subfolders and give each one a section. The section's
+<code>dir</code> is relative to the tab:</p>
+
+<pre><code>docs/pages/knowledge-base/
+├── getting-started/   index.html, setup.html
+├── benchmarks/        vln.html, eqa.html, vla.html
+└── methods/           navgpt.html, mapgpt.html</code></pre>
+
+<pre><code>{
+  "label": "Knowledge Base",
+  "sections": [
+    {"label": "Getting Started", "dir": "getting-started", "key": "guide"},
+    {"label": "Benchmarks", "dir": "benchmarks", "key": "guide"},
+    {"label": "Methods", "dir": "methods", "key": "guide",
+     "order": ["navgpt", "mapgpt"]}
+  ]
+}</code></pre>
+
+<p>Nested subdirectories are discovered recursively: a subfolder with its own
+<code>index.html</code> becomes a collapsible group whose label is that page's title;
+without an <code>index.html</code> it becomes a non-clickable group label. The group
+auto-expands when it contains the active page.</p>
+
+<h2 id="auto-discovery">Auto-discovery (no sections at all)</h2>
+
+<p>Omit <code>sections</code> from <code>_tab.json</code> (or skip the file entirely) and
+the scanner creates one section per immediate subdirectory, alphabetically, each labelled
+from the title-cased folder name. Good for "just works" tabs where you don't care about
+ordering or custom labels.</p>
+
+<h2 id="sections-vs-subfolders">Sections vs. subfolders — which to use</h2>
+
+<ul>
+  <li><strong>One flat section</strong> when the tab has a handful of peer pages.</li>
+  <li><strong>Subfolders + curated sections</strong> when you want named groups, control over order, and short, stable per-group URLs.</li>
+  <li><strong>Auto-discovery</strong> when the structure is still in flux and you don't want to maintain a config.</li>
+</ul>
+
+<p>Because grouping is expressed in <code>_tab.json</code> and on the filesystem — not in
+the page content — you can regroup the sidebar by editing one file and re-running the wrap
+script, without touching any page.</p>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#flat-tab-one-section">Flat tab, one section</a>
+      <a class="toc-h2" href="#grouped-by-subdirectory">Grouped by subdirectory</a>
+      <a class="toc-h2" href="#auto-discovery">Auto-discovery (no sections at all)</a>
+      <a class="toc-h2" href="#sections-vs-subfolders">Sections vs. subfolders — which to use</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rename a tab — My Doc-Site</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab" href="../../pages/guide/index.html">Guide</a>
+        <a class="tab active" href="../../pages/recipes/index.html">Recipes</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <details class="sb-section" open><summary class="sb-section-label">Recipes</summary><div class="sb-pages"><a class="sb-page" href="../../pages/recipes/index.html">Recipes</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-page.html">Add a page</a>
+      <a class="sb-page" href="../../pages/recipes/add-a-tab.html">Add a tab</a>
+      <a class="sb-page active" href="../../pages/recipes/rename-a-tab.html">Rename a tab</a>
+      <a class="sb-page" href="../../pages/recipes/include-html-deck.html">Include an HTML deck</a>
+      <a class="sb-page" href="../../pages/recipes/virtual-subsections.html">Sidebar sections &amp; sub-sections</a></div></details>
+  </div>
+</aside>
+
+<main class="doc-body designdoc">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="index.html">Recipes</a>
+    <span class="sep">/</span>
+    <span class="here">Rename a tab</span>
+  </div>
+  
+</div>
+  <h1>Rename a tab</h1>
+
+<p>Two different things people call "rename a tab":</p>
+
+<h2 id="change-the-label-keep-the-url">A. Change the label, keep the URL</h2>
+
+<p>The label shown in the header is separate from the directory name (which drives the
+URL). To change only the label, edit the tab's <code>_tab.json</code>:</p>
+
+<pre><code>{
+  "label": "Developer Handbook"
+}</code></pre>
+
+<p>Re-run <code>python3 docs/_lib/_wrap_handwritten.py</code>. No files move, existing
+links work, done.</p>
+
+<h2 id="change-the-url-too">B. Change the URL too</h2>
+
+<p>You want the URL to change from <code>/pages/guide/...</code> to
+<code>/pages/handbook/...</code>. Rename the directory:</p>
+
+<pre><code>git mv docs/pages/guide docs/pages/handbook</code></pre>
+
+<p>Then:</p>
+
+<ol>
+  <li>Update any cross-tab links that point into the renamed directory. Find them:
+    <pre><code>grep -rn 'pages/guide/' docs/
+grep -rn '\.\./guide/' docs/pages/</code></pre>
+  </li>
+  <li>Re-run the wrap script so the new tab's pages get fresh chrome and breadcrumbs:
+    <pre><code>python3 docs/_lib/_wrap_handwritten.py</code></pre>
+  </li>
+  <li>If you need to preserve old bookmarks, drop a tiny redirect stub at the old path
+    (a plain HTML <code>&lt;meta http-equiv="refresh"&gt;</code> page), since there's no
+    redirect plugin.</li>
+</ol>
+
+<p>Rule of thumb: rename the label (A) freely; rename the URL (B) only when you really
+need to.</p>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#change-the-label-keep-the-url">A. Change the label, keep the URL</a>
+      <a class="toc-h2" href="#change-the-url-too">B. Change the URL too</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../assets/nav.js"></script>
+
+</body>
+</html>
