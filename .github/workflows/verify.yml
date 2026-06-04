@@ -1,0 +1,33 @@
+name: verify
+
+# Zero-build site, zero-dependency check: re-bake the chrome with nothing but
+# the Python standard library and assert the committed HTML is already in sync.
+# A red check here means someone edited a page or the engine but forgot to run
+# `python3 docs/_lib/_wrap_handwritten.py` before committing.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  wrap-is-idempotent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Re-bake chrome (stdlib only — no pip install)
+        run: python3 docs/_lib/_wrap_handwritten.py
+
+      - name: Assert pages were already baked
+        run: |
+          if ! git diff --quiet; then
+            echo "::error::Working tree changed after wrapping. Run 'python3 docs/_lib/_wrap_handwritten.py' and commit the result."
+            git diff --stat
+            exit 1
+          fi
+          echo "All pages already in sync. ✓"

@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Conventions — My Doc-Site</title>
+<meta name="description" content="The operating rules for this scaffold. Read once, apply mechanically thereafter.">
+<meta property="og:title" content="Conventions — My Doc-Site">
+<meta property="og:description" content="The operating rules for this scaffold. Read once, apply mechanically thereafter.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="My Doc-Site">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/style.css">
 <script>
   // Apply theme before paint to avoid flash.
@@ -16,7 +23,7 @@
 
 <!-- site-layout -->
 </head>
-<body>
+<body data-asset-prefix="../../">
 
 <header class="site-header">
   <div class="site-header-inner">
@@ -27,7 +34,7 @@
         <a class="tab" href="../../pages/demo/index.html">Demo</a>
     </nav>
     <div class="site-actions">
-      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action search-btn" aria-label="Search" title="Search (press /)">🔍</button>
       <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
       <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
     </div>
@@ -184,6 +191,12 @@ shipped, so grep for the old path after a move:
 the layout and nav code — never hardcode them in <code>_lib/</code>. Change the name there,
 re-wrap, and the logo, <code>&lt;title&gt;</code> suffix, breadcrumb root, and footer all
 update together.</p>
+
+<p>Set <code>base_url</code> (the public URL the site is published at) to switch on absolute
+OpenGraph tags — <code>og:url</code> and <code>og:image</code> — so shared links unfurl with a
+preview card. Left empty, the relative <code>&lt;meta name="description"&gt;</code> and
+<code>og:title</code>/<code>og:description</code> tags are still emitted; only the absolute
+ones are skipped.</p>
 
 <h2 id="external-layout-for-self-chromed-pages">10. <code>external_layout</code> for self-chromed pages</h2>
 

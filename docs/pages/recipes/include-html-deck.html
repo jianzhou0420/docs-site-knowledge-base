@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Include an HTML deck — My Doc-Site</title>
+<meta name="description" content="Rendered slide decks (Reveal.js, Marp, PowerPoint → HTML export) and other self-contained pages own their own full markup. You don&#x27;t want the wrap script injecting the site chrome into the middle of…">
+<meta property="og:title" content="Include an HTML deck — My Doc-Site">
+<meta property="og:description" content="Rendered slide decks (Reveal.js, Marp, PowerPoint → HTML export) and other self-contained pages own their own full markup. You don&#x27;t want the wrap script injecting the site chrome into the middle of…">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="My Doc-Site">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/style.css">
 <script>
   // Apply theme before paint to avoid flash.
@@ -16,7 +23,7 @@
 
 <!-- site-layout -->
 </head>
-<body>
+<body data-asset-prefix="../../">
 
 <header class="site-header">
   <div class="site-header-inner">
@@ -27,7 +34,7 @@
         <a class="tab" href="../../pages/demo/index.html">Demo</a>
     </nav>
     <div class="site-actions">
-      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action search-btn" aria-label="Search" title="Search (press /)">🔍</button>
       <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
       <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
     </div>

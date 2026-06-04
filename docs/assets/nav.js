@@ -90,11 +90,140 @@
     headings.forEach(function (h) { observer.observe(h); });
   }
 
-  // ----- search button placeholder -----
-  var searchBtn = document.querySelector('.search-btn');
-  if (searchBtn) {
-    searchBtn.addEventListener('click', function () {
-      alert('Search coming soon. For now, use the sidebar or browser Ctrl+F.');
+  // ----- client-side search -----
+  // Zero-dependency: a flat index (assets/search-index.json) is baked by
+  // _wrap_handwritten.py from every page's title + body text. We fetch it
+  // lazily on first open and filter in the browser. Links are resolved
+  // against data-asset-prefix on <body> so they work at any folder depth and
+  // under any GitHub Pages base path.
+  (function () {
+    var btn = document.querySelector('.search-btn');
+    if (!btn) return;
+    var PREFIX = document.body.getAttribute('data-asset-prefix') || '';
+    var index = null;            // lazily fetched array of {title,url,text}
+    var overlay, input, list;    // built on first open
+    var results = [];
+    var sel = -1;
+
+    function build() {
+      overlay = document.createElement('div');
+      overlay.className = 'search-overlay';
+      overlay.innerHTML =
+        '<div class="search-modal" role="dialog" aria-label="Search">' +
+        '<input class="search-input" type="search" placeholder="Search…" aria-label="Search query" autocomplete="off" spellcheck="false">' +
+        '<div class="search-results"></div>' +
+        '<div class="search-hint">↑↓ navigate · ↵ open · esc close</div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      input = overlay.querySelector('.search-input');
+      list = overlay.querySelector('.search-results');
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+      input.addEventListener('input', function () { render(input.value); });
+      input.addEventListener('keydown', onKey);
+    }
+
+    function open() {
+      if (!overlay) build();
+      overlay.classList.add('open');
+      document.body.classList.add('search-open');
+      input.value = '';
+      render('');
+      input.focus();
+      if (index === null) {
+        fetch(PREFIX + 'assets/search-index.json')
+          .then(function (r) { return r.json(); })
+          .then(function (data) { index = data; render(input.value); })
+          .catch(function () { index = []; render(input.value); });
+      }
+    }
+
+    function close() {
+      if (overlay) overlay.classList.remove('open');
+      document.body.classList.remove('search-open');
+    }
+
+    function hint(msg) {
+      var d = document.createElement('div');
+      d.className = 'search-empty';
+      d.textContent = msg;
+      return d;
+    }
+
+    function render(q) {
+      q = q.trim().toLowerCase();
+      list.innerHTML = '';
+      sel = -1;
+      results = [];
+      if (!q) {
+        list.appendChild(hint(index === null ? 'Loading…'
+          : 'Type to search ' + index.length + ' page' + (index.length === 1 ? '' : 's') + '.'));
+        return;
+      }
+      if (!index) { list.appendChild(hint('Loading…')); return; }
+      results = index.filter(function (e) {
+        return e.title.toLowerCase().indexOf(q) !== -1 || e.text.toLowerCase().indexOf(q) !== -1;
+      }).slice(0, 20);
+      if (!results.length) { list.appendChild(hint('No matches.')); return; }
+      results.forEach(function (e, i) { list.appendChild(row(e, q, i)); });
+      select(0);
+    }
+
+    function row(e, q, i) {
+      var a = document.createElement('a');
+      a.className = 'search-result';
+      a.href = PREFIX + e.url;
+      var t = document.createElement('div');
+      t.className = 'search-result-title';
+      t.textContent = e.title;
+      var s = document.createElement('div');
+      s.className = 'search-result-snippet';
+      s.appendChild(snippet(e.text, q));
+      a.appendChild(t);
+      a.appendChild(s);
+      a.addEventListener('mouseenter', function () { select(i); });
+      return a;
+    }
+
+    function snippet(text, q) {
+      var frag = document.createDocumentFragment();
+      var lo = text.toLowerCase().indexOf(q);
+      if (lo === -1) {
+        frag.appendChild(document.createTextNode(text.slice(0, 120) + (text.length > 120 ? '…' : '')));
+        return frag;
+      }
+      var start = Math.max(0, lo - 40);
+      frag.appendChild(document.createTextNode((start > 0 ? '…' : '') + text.slice(start, lo)));
+      var mk = document.createElement('mark');
+      mk.textContent = text.slice(lo, lo + q.length);
+      frag.appendChild(mk);
+      var end = lo + q.length;
+      frag.appendChild(document.createTextNode(text.slice(end, end + 80) + (end + 80 < text.length ? '…' : '')));
+      return frag;
+    }
+
+    function select(i) {
+      var rows = list.querySelectorAll('.search-result');
+      if (!rows.length) { sel = -1; return; }
+      sel = (i + rows.length) % rows.length;
+      rows.forEach(function (r, j) { r.classList.toggle('sel', j === sel); });
+      rows[sel].scrollIntoView({ block: 'nearest' });
+    }
+
+    function onKey(e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); select(sel + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); select(sel - 1); }
+      else if (e.key === 'Enter') {
+        var rows = list.querySelectorAll('.search-result');
+        if (rows[sel]) { e.preventDefault(); window.location.href = rows[sel].href; }
+      } else if (e.key === 'Escape') { close(); }
+    }
+
+    btn.addEventListener('click', open);
+    document.addEventListener('keydown', function (e) {
+      var open_ = document.body.classList.contains('search-open');
+      var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '');
+      if (e.key === '/' && !typing && !open_) { e.preventDefault(); open(); }
+      else if (e.key === 'Escape' && open_) { close(); }
     });
-  }
+  })();
 })();

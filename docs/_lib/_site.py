@@ -26,6 +26,16 @@ _DEFAULTS = {
     "tagline": "Short tagline — replace me",
     "footer": "",  # resolved to "<site_name> docs" below if empty
     "logo_href": "index.html",
+    # Public URL the site is published at, e.g. "https://you.github.io/my-kb".
+    # When set, pages emit absolute OpenGraph/Twitter tags (og:url, og:image)
+    # so links unfurl with a preview. Left empty → those absolute tags are
+    # omitted (the relative description/title tags are always emitted).
+    "base_url": "",
+    # Default social-share blurb. Empty → falls back to the tagline.
+    "description": "",
+    # Path (relative to docs/) of the social-share image. Only used when
+    # base_url is set, since previews require an absolute URL.
+    "og_image": "assets/screenshots/landing-light.png",
 }
 
 
@@ -40,6 +50,10 @@ def _load() -> dict:
             print(f"warn: bad _site.json at {_CONFIG_FILE}: {e}")
     if not cfg.get("footer"):
         cfg["footer"] = f"{cfg['site_name']} docs"
+    if not cfg.get("description"):
+        cfg["description"] = cfg["tagline"]
+    # Normalize base_url to no trailing slash so we can join with "/" cleanly.
+    cfg["base_url"] = (cfg.get("base_url") or "").rstrip("/")
     return cfg
 
 
@@ -50,3 +64,6 @@ SITE_NAME = SITE["site_name"]
 TAGLINE = SITE["tagline"]
 FOOTER = SITE["footer"]
 LOGO_HREF = SITE["logo_href"]
+BASE_URL = SITE["base_url"]
+DESCRIPTION = SITE["description"]
+OG_IMAGE = SITE["og_image"]

@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/python-3.8%2B-3b3978" alt="python 3.8+">
   <img src="https://img.shields.io/badge/build%20step-none-1f4e79" alt="no build step">
   <img src="https://img.shields.io/badge/license-MIT-444" alt="MIT license">
+  <a href="https://github.com/jianzhou0420/htmlkb/actions/workflows/verify.yml"><img src="https://github.com/jianzhou0420/htmlkb/actions/workflows/verify.yml/badge.svg" alt="verify"></a>
 </p>
 
 <p align="center">
@@ -121,6 +122,17 @@ live-reloads. After adding, moving, or renaming pages, bake the chrome:
 python3 docs/_lib/_wrap_handwritten.py
 ```
 
+## Make it yours
+
+The repo ships a self-documenting sample site. To turn it into *your* KB:
+
+1. **Rename it** — edit [`docs/_site.json`](docs/_site.json) (`site_name`, `tagline`, `footer`). This is the single source of truth for branding; the name flows into every page's header, footer, and `<title>` on the next wrap. Set `base_url` to your published URL to enable rich link previews (OpenGraph tags).
+2. **Clear the samples** — delete the `docs/pages/demo/` folder, and replace the contents of `docs/pages/guide/` and `docs/pages/recipes/` with your own pages (or delete them too).
+3. **Add your content** — drop `.html` files (or whole folders) under `docs/pages/`. Each new top-level folder is a tab; see *[Drop a folder, get a site](#drop-a-folder-get-a-site)* above.
+4. **Re-bake** — run `python3 docs/_lib/_wrap_handwritten.py` (or just keep `./run_dev.sh` running — it bakes on every save).
+
+Working with Claude Code? The template ships two skills — `/add-page` and `/add-tab` — that author real HTML pages and wire up the nav for you.
+
 ## Publish
 
 The site is plain static files, so any static host works. The zero-config path is
@@ -139,6 +151,7 @@ nginx — just serve the `docs/` directory.
 - **Author content, not chrome** — you write a page's body inside a `<main class="doc-body">` block. The wrap script regenerates the header, sidebar, breadcrumbs, on-this-page TOC, and footer from the current file tree. It's idempotent.
 - **`docs/_site.json`** — branding (site name, tagline, footer). **`docs/pages/<tab>/_tab.json`** — per-tab label, order, and sidebar grouping.
 - **Live reload** — `_lib/_serve.py` is a stdlib HTTP server with mtime polling + Server-Sent Events; it pushes a browser reload when files change.
+- **Search & link previews, built in** — the wrap step bakes a tiny `assets/search-index.json`; the header search box (or pressing <kbd>/</kbd>) filters it client-side, no server needed. Every page also ships `<meta>`/OpenGraph tags so shared links unfurl with a title and description.
 
 ```
 .

@@ -1,0 +1,25 @@
+# Normalize line endings on checkin; check out native. Keeps diffs clean and
+# the site identical across Linux / macOS / Windows clones.
+* text=auto
+
+# Source files are always LF — they're served verbatim and read by python3.
+*.html  text eol=lf
+*.css   text eol=lf
+*.js    text eol=lf
+*.py    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.sh    text eol=lf
+
+# Binary assets — never touch line endings, never try to diff/merge.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+
+# Treat the engine as documented source in GitHub's language stats, and don't
+# let the (large, generated) screenshots skew them.
+docs/assets/screenshots/** linguist-generated=true

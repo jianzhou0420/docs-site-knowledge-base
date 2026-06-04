@@ -391,7 +391,7 @@ def render_top_header(active_tab: str, page_rel: str) -> str:
         {tabs_block}
     </nav>
     <div class="site-actions">
-      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action search-btn" aria-label="Search" title="Search (press /)">🔍</button>
       <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
       <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
     </div>

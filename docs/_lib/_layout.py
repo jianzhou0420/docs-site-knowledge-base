@@ -17,7 +17,7 @@ from _nav import (
     render_sidebar,
     render_top_header,
 )
-from _site import FOOTER
+from _site import BASE_URL, DESCRIPTION, FOOTER, OG_IMAGE, SITE_NAME
 
 
 @dataclass
@@ -31,6 +31,7 @@ class PageMeta:
     breadcrumbs: list = field(default_factory=list)  # list of (label, href) — last item is "here"
     last_updated: str = ""  # right-side text in topbar
     has_right_toc: bool = True
+    description: str = ""  # <meta name="description"> / og:description; falls back to site default
     extra_head: str = ""  # raw HTML inserted before </head> (page-specific <style>)
     extra_body_end: str = ""  # raw HTML inserted before </body> (page-specific <script>)
 
@@ -80,6 +81,32 @@ def render_right_toc(toc_entries: Sequence[tuple]) -> str:
 </aside>"""
 
 
+def render_meta_tags(meta: PageMeta, prefix: str) -> str:
+    """Description + OpenGraph/Twitter tags for link previews.
+
+    `og:url`/`og:image` are absolute and therefore only emitted when `base_url`
+    is configured in `_site.json`; `description`/`og:title`/`og:description`
+    are relative and always emitted. The page title (already escaped, with the
+    site-name suffix) doubles as `og:title`."""
+    desc = html.escape(meta.description or DESCRIPTION)
+    tags = [
+        f'<meta name="description" content="{desc}">',
+        f'<meta property="og:title" content="{meta.browser_title}">',
+        f'<meta property="og:description" content="{desc}">',
+        '<meta property="og:type" content="website">',
+        f'<meta property="og:site_name" content="{html.escape(SITE_NAME)}">',
+        '<meta name="twitter:card" content="summary_large_image">',
+    ]
+    if BASE_URL:
+        page_url = f"{BASE_URL}/{meta.page_rel}"
+        tags.append(f'<meta property="og:url" content="{html.escape(page_url)}">')
+        if OG_IMAGE:
+            img_url = f"{BASE_URL}/{OG_IMAGE}"
+            tags.append(f'<meta property="og:image" content="{html.escape(img_url)}">')
+            tags.append(f'<meta name="twitter:image" content="{html.escape(img_url)}">')
+    return "\n".join(tags)
+
+
 def render(meta: PageMeta, body_html: str, toc_entries: Sequence[tuple] = ()) -> str:
     """Assemble the full HTML page."""
     prefix = asset_prefix(meta.page_rel)
@@ -97,6 +124,8 @@ def render(meta: PageMeta, body_html: str, toc_entries: Sequence[tuple] = ()) ->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{meta.browser_title}</title>
+{render_meta_tags(meta, prefix)}
+<link rel="icon" href="{prefix}assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{prefix}assets/style.css">
 <script>
   // Apply theme before paint to avoid flash.
@@ -108,7 +137,7 @@ def render(meta: PageMeta, body_html: str, toc_entries: Sequence[tuple] = ()) ->
 </script>
 {meta.extra_head}
 </head>
-<body>
+<body data-asset-prefix="{prefix}">
 
 {top}
 

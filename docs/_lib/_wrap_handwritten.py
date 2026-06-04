@@ -71,6 +71,15 @@ MAIN_RE = re.compile(r'<main\s+class="doc-body[^"]*"[^>]*>(.*?)</main>', re.DOTA
 LAST_UPDATED_RE = re.compile(r'<div class="last-updated">(.*?)</div>', re.DOTALL | re.IGNORECASE)
 H1_RE = re.compile(r"<h1[^>]*>(.*?)</h1>", re.DOTALL | re.IGNORECASE)
 H2_ID_RE = re.compile(r'<h([23])[^>]*\bid="([^"]+)"[^>]*>(.*?)</h\1>', re.DOTALL | re.IGNORECASE)
+P_RE = re.compile(r"<p[^>]*>(.*?)</p>", re.DOTALL | re.IGNORECASE)
+
+# Cap a page's description and search text so the meta tags stay tidy and the
+# generated search-index.json stays bounded. SEARCH_TEXT_MAX covers every page
+# the template ships in full; on a very large KB, text past the cap on unusually
+# long pages won't be searchable (titles + lead text always are) — raise it if
+# you need deep recall and don't mind a bigger index.
+DESC_MAX = 200
+SEARCH_TEXT_MAX = 8000
 
 
 def _dir_label(name: str) -> str:
@@ -79,6 +88,18 @@ def _dir_label(name: str) -> str:
 
 def _strip_html_tags(text: str) -> str:
     return re.sub(r"<[^>]+>", "", text).strip()
+
+
+def _plain_text(html_fragment: str) -> str:
+    """Strip tags, unescape entities, and collapse whitespace to one line."""
+    text = html.unescape(re.sub(r"<[^>]+>", " ", html_fragment))
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _truncate(text: str, limit: int) -> str:
+    if len(text) <= limit:
+        return text
+    return text[:limit].rsplit(" ", 1)[0].rstrip() + "…"
 
 
 def _tab_for(rel: str) -> str:
@@ -142,7 +163,7 @@ def _toc_from_body(body_html: str) -> list:
     return entries
 
 
-def convert(path: Path) -> bool:
+def convert(path: Path) -> tuple[bool, dict | None]:
     rel = path.relative_to(V2).as_posix()
     raw = path.read_text(encoding="utf-8")
     already_wrapped = CONVERTED_MARKER in raw
@@ -184,7 +205,7 @@ def convert(path: Path) -> bool:
         m = BODY_RE.search(raw)
         if not m:
             print(f"  SKIP (no <body> and no <main>): {rel}")
-            return False
+            return False, None
         body_inner = m.group(1)
     _ = already_wrapped  # silence unused-variable lint
 
@@ -232,6 +253,14 @@ def convert(path: Path) -> bool:
 
     toc = _toc_from_body(body_inner)
 
+    # Page description for <meta>/OpenGraph: the first paragraph, trimmed. Empty
+    # when the page has no <p> (e.g. a pure-list page) — the layout then falls
+    # back to the site-wide default. The <h1> heading is excluded by design.
+    description = ""
+    m_p = P_RE.search(body_inner)
+    if m_p:
+        description = _truncate(_plain_text(m_p.group(1)), DESC_MAX)
+
     meta = _layout.PageMeta(
         tab=tab,
         page_rel=rel,
@@ -242,18 +271,27 @@ def convert(path: Path) -> bool:
         breadcrumbs=breadcrumbs,
         last_updated=last_updated,
         has_right_toc=has_right_toc,
+        description=description,
         extra_head=extra_head,
         extra_body_end=extra_body_end,
     )
+
+    # Search-index entry — built from the same parsed content, so it always
+    # matches what's actually on the page (title + full body text, trimmed).
+    entry = {
+        "title": title,
+        "url": rel,
+        "text": _truncate(_plain_text(body_inner), SEARCH_TEXT_MAX),
+    }
 
     output = _layout.render(meta, body_inner, toc)
     output = output.replace("</head>", f"{CONVERTED_MARKER}\n</head>", 1)
     # Write only when something actually changed. Keeps mtimes stable so the
     # dev server's auto-wrap doesn't see its own output as a new change and loop.
-    if output == raw:
-        return False
-    path.write_text(output, encoding="utf-8")
-    return True
+    changed = output != raw
+    if changed:
+        path.write_text(output, encoding="utf-8")
+    return changed, entry
 
 
 def discover_all_pages() -> list[Path]:
@@ -279,20 +317,47 @@ def discover_all_pages() -> list[Path]:
     return pages
 
 
+SEARCH_INDEX_FILE = V2 / "assets" / "search-index.json"
+
+
+def _write_search_index(entries: list[dict]) -> bool:
+    """Write assets/search-index.json (consumed by the client-side search in
+    nav.js). Returns True if the file changed. Sorted + compact so the output
+    is deterministic and the dev server's auto-wrap doesn't loop on it."""
+    import json
+
+    entries = sorted(entries, key=lambda e: e["url"])
+    payload = json.dumps(entries, ensure_ascii=False, separators=(",", ":")) + "\n"
+    try:
+        if SEARCH_INDEX_FILE.exists() and SEARCH_INDEX_FILE.read_text(encoding="utf-8") == payload:
+            return False
+    except Exception:
+        pass
+    SEARCH_INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SEARCH_INDEX_FILE.write_text(payload, encoding="utf-8")
+    return True
+
+
 def main(quiet: bool = False) -> int:
-    """Re-wrap all pages. Returns the number of files actually changed.
-    `quiet` suppresses the per-run summary (used by the dev server)."""
+    """Re-wrap all pages and regenerate the search index. Returns the number of
+    files actually changed. `quiet` suppresses the per-run summary (dev server)."""
     n_ok = 0
     n_skip = 0
+    entries: list[dict] = []
     for path in discover_all_pages():
         try:
-            if convert(path):
+            changed, entry = convert(path)
+            if entry is not None:
+                entries.append(entry)
+            if changed:
                 n_ok += 1
             else:
                 n_skip += 1
         except Exception as e:
             print(f"  ERROR {path.relative_to(V2)}: {type(e).__name__}: {e}")
             n_skip += 1
+    if _write_search_index(entries):
+        n_ok += 1
     if not quiet:
         print(f"\ndone — {n_ok} written, {n_skip} unchanged/skipped")
     return n_ok
