@@ -93,6 +93,18 @@ live-reloads. After adding, moving, or renaming pages, bake the chrome:
 python3 docs/_lib/_wrap_handwritten.py
 ```
 
+## Publish
+
+The site is plain static files, so any static host works. The zero-config path is
+**GitHub Pages**: push the repo, then under **Settings → Pages** pick *Deploy from a
+branch* → branch `main`, folder **`/docs`**. Your site goes live at
+`https://<you>.github.io/<repo>/` — exactly how the
+[AgentCanvas example](https://jianzhou0420.github.io/AgentCanvas/) above is hosted.
+
+A `docs/.nojekyll` ships in the repo so Pages serves the files verbatim (without it,
+Jekyll would skip the `_lib/` and `_*.json` files). For any other host — Netlify, S3,
+nginx — just serve the `docs/` directory.
+
 ## How it works
 
 - **`docs/pages/<dir>/`** — each directory is a top tab; each `.html` file is a page. (`_lib/_nav.py` scans this tree.)
