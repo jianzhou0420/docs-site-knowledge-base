@@ -1,4 +1,4 @@
-<h1 align="center">docs-site-knowledge-base</h1>
+<h1 align="center">htmlkb</h1>
 
 <p align="center">
   <strong>A zero-dependency static HTML doc-site for LLM-authored knowledge bases.</strong><br>
@@ -30,6 +30,13 @@ learn, a build to run, and a dependency tree that rots between machines and over
 This scaffold takes the opposite bet — **the rendered HTML _is_ the source**, and the only
 tooling is a few hundred lines of the Python standard library. It renders the same in three
 years as it does today.
+
+> **Inspired by [Andrej Karpathy's "LLM Knowledge Bases"](https://x.com/karpathy/status/2039805659525644595)** —
+> his [`llm-wiki` idea file](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+> sketches the pattern: drop raw sources into a folder and let an LLM incrementally *compile*
+> them into an interlinked wiki that compounds over time. This repo is that pattern rendered
+> as a **zero-dependency static HTML site** (Karpathy's sketch keeps it as Markdown) — one you
+> can read locally and publish in one click.
 
 | Requirement of an LLM-authored KB | How this repo answers it |
 |---|---|
@@ -80,7 +87,7 @@ hundreds of pages.
 ## Quick start
 
 ```bash
-git clone https://github.com/jianzhou0420/docs-site-knowledge-base.git my-kb
+git clone https://github.com/jianzhou0420/htmlkb.git my-kb
 cd my-kb
 ./run_dev.sh
 # → http://0.0.0.0:8002
