@@ -27,7 +27,13 @@ Thumbs.db
 .env
 *.env.local
 
-# Claude Code / agent workflow — this is a standalone docs template; the
-# Claude collaboration scaffolding is local-only and not part of the template.
-.claude/
+# Claude Code / agent workflow — local-only, EXCEPT the two doc-authoring
+# skills that ship with the template (part of its "Claude authors it" value).
+# To un-ignore files inside an ignored dir, the parent dirs must be re-included
+# first (git won't descend into an excluded directory), hence the /* + ! dance.
+.claude/*
+!.claude/commands/
+.claude/commands/*
+!.claude/commands/add-page.md
+!.claude/commands/add-tab.md
 /CLAUDE.md

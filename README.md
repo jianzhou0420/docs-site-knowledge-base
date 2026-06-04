@@ -1,55 +1,83 @@
-# docs-site-knowledge-base
+<h1 align="center">docs-site-knowledge-base</h1>
 
-**A scaffold for building personal knowledge bases with Claude as the primary author — rendered as a zero-dependency static HTML site.**
+<p align="center">
+  <strong>A zero-dependency static HTML doc-site for LLM-authored knowledge bases.</strong><br>
+  Drop sources in → Claude organizes &amp; cross-links them → browse a fast, clean site.<br>
+  No <code>pip</code>, no <code>npm</code>, no build step. If you have <code>python3</code>, you can run it.
+</p>
 
-You drop source material — papers, article clippings, notes, code excerpts, experiment logs — into the repo. You ask Claude to organize, summarize, and cross-link it. The result is a browsable static site you can read locally and share.
+<p align="center">
+  <img src="https://img.shields.io/badge/dependencies-zero-2d6a4f" alt="zero dependencies">
+  <img src="https://img.shields.io/badge/python-3.8%2B-3b3978" alt="python 3.8+">
+  <img src="https://img.shields.io/badge/build%20step-none-1f4e79" alt="no build step">
+  <img src="https://img.shields.io/badge/license-MIT-444" alt="MIT license">
+</p>
 
-The site is **pure HTML** with a tiny Python-standard-library engine that gives it filesystem-driven navigation. There is **no `pip`, no `npm`, no build step** — if you have `python3`, you can run it. Claude shapes the knowledge base by creating, moving, and editing HTML files; the engine turns the file tree into tabs, sidebars, breadcrumbs, and an on-this-page TOC.
+<p align="center">
+  <img src="docs/assets/screenshots/guide-light.png" width="900" alt="Doc-site: header tabs, left sidebar, content, and right on-this-page TOC">
+</p>
 
-## Why this shape
+---
+
+## Why
+
+You drop source material — papers, clippings, notes, code excerpts, experiment logs. You ask
+Claude to organize, summarize, and cross-link it. The result is a browsable static site you
+read locally and share.
+
+The catch with most doc generators is the toolchain: a package set to install, a config to
+learn, a build to run, and a dependency tree that rots between machines and over the years.
+This scaffold takes the opposite bet — **the rendered HTML _is_ the source**, and the only
+tooling is a few hundred lines of the Python standard library. It renders the same in three
+years as it does today.
 
 | Requirement of an LLM-authored KB | How this repo answers it |
 |---|---|
-| Additions shouldn't require a central-config edit | Nav is read from the filesystem. Claude creates `docs/pages/<tab>/<page>.html` → the page appears. |
-| Reorganizing should be cheap | Moving a folder re-routes the nav. No central nav list to keep in sync. |
-| Content should stay portable and durable | Plain `.html` files. No generator, no plugins, nothing to rot. It renders the same in three years. |
-| The author (Claude) needs to know the rules | Conventions are documented inside the rendered site under the **Guide** tab, so Claude can read them on demand. |
-| You want to *read* the result, not just diff it | A shared layout gives every page a header, sidebar, breadcrumbs, dark mode, and a right-hand TOC. |
+| Additions shouldn't need a central-config edit | Nav is read from the filesystem. Claude creates `docs/pages/<tab>/<page>.html` → the page appears. |
+| Reorganizing should be cheap | Move a folder → the nav re-routes. No central nav list to sync. |
+| Content should stay portable & durable | Plain `.html`. No generator, no plugins, nothing to rot. |
+| The author (Claude) needs the rules | Conventions live inside the rendered site, under **Guide**, for Claude to read on demand. |
+| You want to *read* the result | Every page gets a header, sidebar, breadcrumbs, dark mode, and a right-hand TOC. |
 
-Same spirit as Andrej Karpathy's "LLM Knowledge Bases" workflow (raw sources → LLM-compiled wiki → browsable frontend); different tools. This repo trades a generator's plugin ecosystem (search, diagrams, i18n) for radical simplicity and zero-dependency longevity.
+## Looks like
 
-## How it works
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Light</strong></td>
+    <td width="50%" align="center"><strong>Dark</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/assets/screenshots/landing-light.png" alt="Landing page, light theme"></td>
+    <td><img src="docs/assets/screenshots/installation-dark.png" alt="Content page, dark theme"></td>
+  </tr>
+</table>
 
-- **`docs/pages/<dir>/`** — each directory is a top tab; each `.html` file is a page. (`_lib/_nav.py` scans this tree.)
-- **`docs/_lib/`** — the engine: a live-reload dev server, a shared HTML layout, the filesystem nav, and a wrap script.
-- **Authoring** — you write a page as a normal HTML doc whose content sits in a `<main class="doc-body">` block. Running `python3 docs/_lib/_wrap_handwritten.py` bakes the current chrome (header / sidebar / breadcrumbs / TOC / footer) onto every page. It's idempotent.
-- **`docs/_site.json`** — branding (site name, tagline, footer). **`docs/pages/<tab>/_tab.json`** — per-tab label, order, and sidebar grouping.
+<table>
+  <tr>
+    <td width="62%"><img src="docs/assets/screenshots/recipes-light.png" alt="A recipe page with curated sidebar and TOC"></td>
+    <td width="38%" align="center"><img src="docs/assets/screenshots/mobile-light.png" width="240" alt="Responsive mobile layout with drawer nav"><br><em>Responsive — drawer nav on mobile</em></td>
+  </tr>
+</table>
 
-## What's in the repo
+## Real-world example
 
-```
-.
-├── docs/
-│   ├── index.html                    Root landing page
-│   ├── _site.json                    Branding config (site name, tagline, footer)
-│   ├── _lib/
-│   │   ├── _serve.py                 Live-reload dev server (stdlib HTTP + SSE)
-│   │   ├── _layout.py                Shared HTML layout shell
-│   │   ├── _nav.py                   Filesystem-driven tabs + sidebar
-│   │   ├── _wrap_handwritten.py      Bakes chrome onto authored pages
-│   │   └── _site.py                  Loads _site.json
-│   ├── assets/
-│   │   ├── style.css                 Theme + layout styles
-│   │   └── nav.js                    Theme toggle, mobile drawer, TOC scroll-spy
-│   └── pages/
-│       ├── guide/                    Install, quick-start, conventions, rationale
-│       └── recipes/                  Task how-tos (add a page/tab, group the sidebar)
-└── run_dev.sh                        ./run_dev.sh → http://0.0.0.0:8002
-```
+This scaffold isn't just a demo — it backs a real, ~210-page knowledge base.
+**[AgentCanvas](https://jianzhou0420.github.io/AgentCanvas/)** is a visual agent-design
+platform for embodied-AI research, and its entire doc-site — developer guide, design docs,
+NodeSet reference, research notes and literature surveys — is built with this exact engine
+and authored largely by Claude.
 
-The site that ships in `docs/` is **self-documenting** — it's both the manual for the scaffold and a live demonstration of a filesystem-driven KB. Replace its content with yours as your KB grows.
+<p align="center">
+  <a href="https://jianzhou0420.github.io/AgentCanvas/">
+    <img src="docs/assets/screenshots/example-agentcanvas.png" width="900" alt="The AgentCanvas documentation site, built with this scaffold">
+  </a>
+</p>
 
-## Getting started
+[**Browse it live →**](https://jianzhou0420.github.io/AgentCanvas/) to see what a populated,
+cross-linked KB feels like at scale — same filesystem-driven nav, same three-column layout,
+hundreds of pages.
+
+## Quick start
 
 ```bash
 git clone https://github.com/jianzhou0420/docs-site-knowledge-base.git my-kb
@@ -58,19 +86,52 @@ cd my-kb
 # → http://0.0.0.0:8002
 ```
 
-No environment to create, no dependencies to install. Edit a page and the browser live-reloads. After adding, moving, or renaming pages, run `python3 docs/_lib/_wrap_handwritten.py` to refresh the chrome.
+No environment to create, no dependencies to install. Edit a page and the browser
+live-reloads. After adding, moving, or renaming pages, bake the chrome:
 
-Full install notes, the conventions your Claude agent should follow, and worked recipes live under the **Guide** and **Recipes** tabs of the rendered site. Rationale and tradeoffs are in *Guide → Why this pattern*.
+```bash
+python3 docs/_lib/_wrap_handwritten.py
+```
+
+## How it works
+
+- **`docs/pages/<dir>/`** — each directory is a top tab; each `.html` file is a page. (`_lib/_nav.py` scans this tree.)
+- **Author content, not chrome** — you write a page's body inside a `<main class="doc-body">` block. The wrap script regenerates the header, sidebar, breadcrumbs, on-this-page TOC, and footer from the current file tree. It's idempotent.
+- **`docs/_site.json`** — branding (site name, tagline, footer). **`docs/pages/<tab>/_tab.json`** — per-tab label, order, and sidebar grouping.
+- **Live reload** — `_lib/_serve.py` is a stdlib HTTP server with mtime polling + Server-Sent Events; it pushes a browser reload when files change.
+
+```
+.
+├── docs/
+│   ├── index.html                 Root landing page
+│   ├── _site.json                 Branding (site name, tagline, footer)
+│   ├── _lib/                       The engine (Python stdlib only)
+│   │   ├── _serve.py                 Live-reload dev server (HTTP + SSE)
+│   │   ├── _layout.py                Shared HTML layout shell
+│   │   ├── _nav.py                   Filesystem-driven tabs + sidebar
+│   │   ├── _wrap_handwritten.py      Bakes chrome onto authored pages
+│   │   └── _site.py                  Loads _site.json
+│   ├── assets/                     style.css, nav.js, screenshots/
+│   └── pages/
+│       ├── guide/                  Install, quick-start, conventions, rationale
+│       └── recipes/                Task how-tos (add a page/tab, group the sidebar)
+└── run_dev.sh                      ./run_dev.sh → http://0.0.0.0:8002
+```
+
+The site shipped in `docs/` is **self-documenting** — it's both the manual for the scaffold
+and a live demo of a filesystem-driven KB. Replace its content with yours as your KB grows.
+Full conventions and worked recipes live under the **Guide** and **Recipes** tabs of the
+rendered site.
 
 ## A typical session
 
-1. Drop a source — a paper PDF, a clipping, a conversation transcript — somewhere you can reach it.
-2. Ask Claude to summarize it, extract concepts, write it up as an HTML page under `docs/pages/`, and link it to existing pages.
-3. Claude runs the wrap script; you browse the result in the dev server. Move files around if the organization isn't right.
+1. Drop a source — a paper PDF, a clipping, a transcript — somewhere you can reach it.
+2. Ask Claude to summarize it, write it up as an HTML page under `docs/pages/`, and link it to existing pages.
+3. Claude runs the wrap script; you browse the result. Move files around if the organization isn't right.
 4. When the KB is big enough, query Claude across it ("what have I learned about X?") and file the answer back as a new synthesized page.
 
 The human rarely writes the wiki directly. The human drops material, asks questions, and reads.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT. See [`LICENSE`](LICENSE).
