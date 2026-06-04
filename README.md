@@ -1,8 +1,8 @@
 <h1 align="center">htmlkb</h1>
 
 <p align="center">
-  <strong>A zero-dependency static HTML doc-site for LLM-authored knowledge bases.</strong><br>
-  Drop sources in → Claude organizes &amp; cross-links them → browse a fast, clean site.<br>
+  <strong>A zero-dependency static HTML doc-site for knowledge bases you build yourself.</strong><br>
+  You organize and summarize; Claude writes &amp; cross-links the HTML pages → browse a fast, clean site.<br>
   No <code>pip</code>, no <code>npm</code>, no build step. If you have <code>python3</code>, you can run it.
 </p>
 
@@ -22,22 +22,23 @@
 
 ## Why
 
-You drop source material — papers, clippings, notes, code excerpts, experiment logs. You ask
-Claude to organize, summarize, and cross-link it. The result is a browsable static site you
-read locally and share.
+A knowledge base is something *you* build — you decide what matters, how it's organized, and
+how it's distilled. This scaffold is the place to keep it: a clean, browsable static site.
+And because **the rendered HTML _is_ the source**, Claude can be your writer — hand it a
+source and a spot in your structure and it writes the page, cross-links it, and re-bakes the
+chrome. **You curate; Claude does the HTML.**
 
 The catch with most doc generators is the toolchain: a package set to install, a config to
 learn, a build to run, and a dependency tree that rots between machines and over the years.
-This scaffold takes the opposite bet — **the rendered HTML _is_ the source**, and the only
-tooling is a few hundred lines of the Python standard library. It renders the same in three
-years as it does today.
+This scaffold takes the opposite bet — the only tooling is a few hundred lines of the Python
+standard library. It renders the same in three years as it does today.
 
-> **Inspired by [Andrej Karpathy's "LLM Knowledge Bases"](https://x.com/karpathy/status/2039805659525644595)** —
-> his [`llm-wiki` idea file](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
-> sketches the pattern: drop raw sources into a folder and let an LLM incrementally *compile*
-> them into an interlinked wiki that compounds over time. This repo is that pattern rendered
-> as a **zero-dependency static HTML site** (Karpathy's sketch keeps it as Markdown) — one you
-> can read locally and publish in one click.
+> **Related to [Andrej Karpathy's "LLM Knowledge Bases"](https://x.com/karpathy/status/2039805659525644595)**,
+> but a different take. His [`llm-wiki` sketch](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+> leans on dropping raw sources in and letting an LLM *auto-compile* a Markdown wiki. htmlkb is
+> for a KB **you** curate — you own the structure and the synthesis, and Claude writes the
+> pages — rendered as a **zero-dependency static HTML site** you can read locally and publish
+> in one click.
 
 | Requirement of an LLM-authored KB | How this repo answers it |
 |---|---|
@@ -178,12 +179,12 @@ rendered site.
 
 ## A typical session
 
-1. Drop a source — a paper PDF, a clipping, a transcript — somewhere you can reach it.
-2. Ask Claude to summarize it, write it up as an HTML page under `docs/pages/`, and link it to existing pages.
-3. Claude runs the wrap script; you browse the result. Move files around if the organization isn't right.
-4. When the KB is big enough, query Claude across it ("what have I learned about X?") and file the answer back as a new synthesized page.
+1. Decide where a new topic belongs in *your* structure — which tab, folder, or page.
+2. Hand Claude a source and that spot: "summarize this into a page under `docs/pages/…` and link it to the related pages."
+3. Claude writes the HTML page, cross-links it, and runs the wrap script; you browse and adjust the organization if it isn't right.
+4. As the KB grows, ask Claude across it ("what have I written about X?") and have it write the answer up as a new page where you want it.
 
-The human rarely writes the wiki directly. The human drops material, asks questions, and reads.
+You drive the structure and the synthesis; Claude does the writing and the wiring.
 
 ## License
 

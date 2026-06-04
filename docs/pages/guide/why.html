@@ -73,9 +73,9 @@
 <p>A conventional documentation site leans on a generator (MkDocs, Docusaurus, Hugo)
 plus a plugin ecosystem. That buys you a lot, but it also means a toolchain to install,
 a config to learn, a build step to run, and a dependency tree that drifts and breaks
-between machines and over time. For a personal, long-lived, LLM-authored knowledge base
-— where the author is usually Claude and the reader is usually you — that overhead earns
-little and costs upkeep.</p>
+between machines and over time. For a personal, long-lived knowledge base you curate
+— where you shape the structure, Claude writes the pages, and you read the result — that
+overhead earns little and costs upkeep.</p>
 
 <p>This scaffold takes the opposite bet: <strong>the rendered HTML is the source</strong>,
 and the only tooling is a few hundred lines of Python standard library.</p>
@@ -108,7 +108,7 @@ run the wrap script, commit.</p>
 <h2 id="when-this-pattern-shines">When this pattern shines</h2>
 
 <ul>
-  <li><strong>LLM-authored knowledge bases</strong> — Claude writes HTML directly into <code>pages/</code>; you read the result.</li>
+  <li><strong>Knowledge bases you curate</strong> — you shape the structure; Claude writes the HTML directly into <code>pages/</code>; you read the result.</li>
   <li><strong>Long-lived personal sites</strong> where "still builds in three years with zero dependency rot" matters more than a rich plugin set.</li>
   <li><strong>Air-gapped or minimal environments</strong> — if it has Python, it runs.</li>
 </ul>
