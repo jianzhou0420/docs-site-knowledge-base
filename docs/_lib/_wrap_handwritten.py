@@ -248,6 +248,10 @@ def convert(path: Path) -> bool:
 
     output = _layout.render(meta, body_inner, toc)
     output = output.replace("</head>", f"{CONVERTED_MARKER}\n</head>", 1)
+    # Write only when something actually changed. Keeps mtimes stable so the
+    # dev server's auto-wrap doesn't see its own output as a new change and loop.
+    if output == raw:
+        return False
     path.write_text(output, encoding="utf-8")
     return True
 
@@ -275,7 +279,9 @@ def discover_all_pages() -> list[Path]:
     return pages
 
 
-def main():
+def main(quiet: bool = False) -> int:
+    """Re-wrap all pages. Returns the number of files actually changed.
+    `quiet` suppresses the per-run summary (used by the dev server)."""
     n_ok = 0
     n_skip = 0
     for path in discover_all_pages():
@@ -287,7 +293,9 @@ def main():
         except Exception as e:
             print(f"  ERROR {path.relative_to(V2)}: {type(e).__name__}: {e}")
             n_skip += 1
-    print(f"\ndone — {n_ok} re-wrapped, {n_skip} skipped/error")
+    if not quiet:
+        print(f"\ndone — {n_ok} written, {n_skip} unchanged/skipped")
+    return n_ok
 
 
 if __name__ == "__main__":

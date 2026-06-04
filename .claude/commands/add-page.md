@@ -78,7 +78,7 @@ Format rules:
 4. **Wire into nav** — open `docs/pages/<tab>/_tab.json` and add `<slug>` to the relevant
    section's `order` array at a sensible position (or append). A section with `"dir": ""`
    covers the tab root. If the tab has no `order` (auto-discovery), nothing to edit.
-5. **Bake the chrome**: `python3 docs/_lib/_wrap_handwritten.py`.
+5. **Bake the chrome**: `python3 docs/_lib/_wrap_handwritten.py` (if `run_dev.sh` is already running it auto-wraps, but running it explicitly is always safe and idempotent).
 6. **Report**: the URL `http://0.0.0.0:8002/pages/<tab>/<slug>.html`, and confirm the page
    now appears in the sidebar in the intended position.
 

@@ -24,6 +24,7 @@
     <nav class="site-tabs">
         <a class="tab" href="../../pages/guide/index.html">Guide</a>
         <a class="tab active" href="../../pages/recipes/index.html">Recipes</a>
+        <a class="tab" href="../../pages/demo/index.html">Demo</a>
     </nav>
     <div class="site-actions">
       <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
@@ -37,7 +38,7 @@
 
 <aside class="sidebar-left" aria-label="Section navigation">
   <div class="sidebar-inner">
-  <details class="sb-section" open><summary class="sb-section-label">Recipes</summary><div class="sb-pages"><a class="sb-page" href="../../pages/recipes/index.html">Recipes</a>
+  <details class="sb-section" data-key="pages/recipes" open><summary class="sb-section-label">Recipes</summary><div class="sb-pages"><a class="sb-page" href="../../pages/recipes/index.html">Recipes</a>
       <a class="sb-page" href="../../pages/recipes/add-a-page.html">Add a page</a>
       <a class="sb-page active" href="../../pages/recipes/add-a-tab.html">Add a tab</a>
       <a class="sb-page" href="../../pages/recipes/rename-a-tab.html">Rename a tab</a>
@@ -63,16 +64,22 @@
 
 <h2 id="minimum-steps">Minimum steps</h2>
 
-<p>Create a directory under <code>docs/pages/</code> with at least an
-<code>index.html</code> (any page with a <code>&lt;main class="doc-body"&gt;</code> block):</p>
+<p>Just drop a folder containing one or more <code>.html</code> pages (each with a
+<code>&lt;main class="doc-body"&gt;</code> block) under <code>docs/pages/</code> —
+<strong>no <code>index.html</code> and no <code>_tab.json</code> required</strong>:</p>
 
 <pre><code>mkdir docs/pages/reference
-# author docs/pages/reference/index.html
-python3 docs/_lib/_wrap_handwritten.py</code></pre>
+# author one or more pages, e.g. docs/pages/reference/overview.html</code></pre>
 
-<p>Refresh. A <strong>Reference</strong> tab appears in the top bar. A tab with no
-serveable page is silently skipped, so the directory must contain an <code>index.html</code>
-(or set a <code>landing</code> in <code>_tab.json</code> pointing at one that exists).</p>
+<p>With <code>./run_dev.sh</code> running, a <strong>Reference</strong> tab appears
+automatically (the dev server bakes the chrome for you). If the server isn't running, bake
+once with <code>python3 docs/_lib/_wrap_handwritten.py</code>. The tab opens to its first
+page; any subfolders become collapsible sidebar dividers, recursively (see
+<a href="../guide/conventions.html#filesystem-is-the-nav">Conventions §1</a>). A tab with no
+serveable <code>.html</code> at all is silently skipped.</p>
+
+<p>Everything below is <strong>optional</strong> — add a <code>_tab.json</code> only when you
+want to override the auto behaviour.</p>
 
 <h2 id="controlling-tab-order">Controlling tab order</h2>
 

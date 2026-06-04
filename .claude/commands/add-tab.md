@@ -65,8 +65,9 @@ content only inside `<main class="doc-body">`, one `<h1>`, every `<h2>`/`<h3>` w
    a genuine intro/hub for the tab — what it holds, links to its pages — not a stub.
 5. **Optional initial pages** — if the user supplied material, author those pages too (same
    format) and add their slugs to the section's `order`.
-6. **Bake the chrome**: `python3 docs/_lib/_wrap_handwritten.py`. (A tab with no serveable
-   page is silently skipped, so `index.html` must exist before wrapping.)
+6. **Bake the chrome**: `python3 docs/_lib/_wrap_handwritten.py` (if `run_dev.sh` is running
+   it auto-wraps; running it explicitly is always safe and idempotent). A tab needs at least
+   one serveable `.html` or it's silently skipped — `index.html` is optional but recommended.
 7. **Report**: the tab now shows in the header; landing URL
    `http://0.0.0.0:8002/pages/<slug>/index.html`.
 

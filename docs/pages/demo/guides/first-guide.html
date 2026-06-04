@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First guide — My Doc-Site</title>
+<link rel="stylesheet" href="../../../assets/style.css">
+<script>
+  // Apply theme before paint to avoid flash.
+  (function() {
+    var t = localStorage.getItem('site-theme');
+    if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+<!-- site-layout -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="../../../index.html">My Doc-Site</a>
+    <nav class="site-tabs">
+        <a class="tab" href="../../../pages/guide/index.html">Guide</a>
+        <a class="tab" href="../../../pages/recipes/index.html">Recipes</a>
+        <a class="tab active" href="../../../pages/demo/index.html">Demo</a>
+    </nav>
+    <div class="site-actions">
+      <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
+      <button class="site-action theme-toggle" aria-label="Toggle theme" title="Toggle dark mode">🌙</button>
+      <button class="site-action mobile-nav-toggle" aria-label="Menu" title="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="site-layout has-right-toc">
+
+<aside class="sidebar-left" aria-label="Section navigation">
+  <div class="sidebar-inner">
+  <a class="sb-page" href="../../../pages/demo/index.html">Demo — built by dropping a folder</a>
+      <a class="sb-page" href="../../../pages/demo/a-loose-page.html">A loose page</a>
+      <details class="sb-subsection" data-key="pages/demo/extras"><summary class="sb-subsection-label"><span class="sb-group-label-text">Extras</span></summary><div class="sb-pages"><a class="sb-page" href="../../../pages/demo/extras/one.html">Extra one</a>
+      <a class="sb-page" href="../../../pages/demo/extras/two.html">Extra two</a></div></details>
+      <details class="sb-subsection" data-key="pages/demo/guides" open><summary class="sb-subsection-label"><a class="sb-group-link" href="../../../pages/demo/guides/index.html">Guides</a></summary><div class="sb-pages"><a class="sb-page active" href="../../../pages/demo/guides/first-guide.html">First guide</a>
+      <details class="sb-subsection" data-key="pages/demo/guides/nested"><summary class="sb-subsection-label"><a class="sb-group-link" href="../../../pages/demo/guides/nested/index.html">Nested (depth 3)</a></summary><div class="sb-pages"><a class="sb-page" href="../../../pages/demo/guides/nested/deep-page.html">Deep page</a></div></details></div></details>
+  </div>
+</aside>
+
+<main class="doc-body guide">
+  <div class="topbar">
+  <div class="crumbs">
+    <a href="../../../index.html">My Doc-Site</a>
+    <span class="sep">/</span>
+    Pages
+    <span class="sep">/</span>
+    <a href="../index.html">Demo</a>
+    <span class="sep">/</span>
+    <a href="index.html">Guides</a>
+    <span class="sep">/</span>
+    <span class="here">First guide</span>
+  </div>
+  
+</div>
+  <h1>First guide</h1>
+<p>An ordinary page inside the <em>Guides</em> divider.</p>
+<h2 id="note">Note</h2>
+<p>Its sidebar label and this page's title both come from the <code>&lt;title&gt;</code> / <code>&lt;h1&gt;</code>.</p>
+
+  <footer>
+    <span>My Doc-Site docs</span>
+  </footer>
+</main>
+
+<aside class="sidebar-right" aria-label="On this page">
+  <div class="sidebar-inner">
+    <span class="toc-label">On this page</span>
+    <nav class="toc-list">
+      <a class="toc-h2" href="#note">Note</a>
+    </nav>
+  </div>
+</aside>
+
+</div>
+
+<script src="../../../assets/nav.js"></script>
+
+</body>
+</html>

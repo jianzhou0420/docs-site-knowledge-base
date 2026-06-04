@@ -66,6 +66,27 @@ years as it does today.
   </tr>
 </table>
 
+## Drop a folder, get a site
+
+Navigation is **pure filesystem** — there's no nav config to maintain. Drop a folder of
+`.html` files anywhere under `docs/pages/` and it becomes a tab whose sidebar mirrors the
+folder tree, recursively:
+
+- a **folder** is a collapsible divider; its `index.html` (if present) is that divider's clickable default page;
+- loose `.html` files are pages that sit alongside the subfolders, at every level;
+- it nests to any depth, and **nothing requires an `index.html` or a config file**.
+
+With the dev server running, dropped or edited files show up instantly — it re-bakes the
+chrome for you. The screenshot below is the shipped **Demo** tab, created by dropping a
+nested folder exactly like this (the sidebar is a live mirror of the folders):
+
+<p align="center">
+  <img src="docs/assets/screenshots/drop-a-folder.png" width="900" alt="The Demo tab — a sidebar mirroring a nested folder tree, created with zero config">
+</p>
+
+Want custom labels, ordering, or accent colors instead of the defaults? Add an optional
+`_tab.json` — see *Guide → Conventions*.
+
 ## Real-world example
 
 This scaffold isn't just a demo — it backs a real, ~210-page knowledge base.

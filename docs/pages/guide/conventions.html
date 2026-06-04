@@ -24,6 +24,7 @@
     <nav class="site-tabs">
         <a class="tab active" href="../../pages/guide/index.html">Guide</a>
         <a class="tab" href="../../pages/recipes/index.html">Recipes</a>
+        <a class="tab" href="../../pages/demo/index.html">Demo</a>
     </nav>
     <div class="site-actions">
       <button class="site-action search-btn" aria-label="Search" title="Search (coming)">🔍</button>
@@ -37,7 +38,7 @@
 
 <aside class="sidebar-left" aria-label="Section navigation">
   <div class="sidebar-inner">
-  <details class="sb-section" open><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page" href="../../pages/guide/index.html">Guide</a>
+  <details class="sb-section" data-key="pages/guide" open><summary class="sb-section-label">Guide</summary><div class="sb-pages"><a class="sb-page" href="../../pages/guide/index.html">Guide</a>
       <a class="sb-page" href="../../pages/guide/installation.html">Installation</a>
       <a class="sb-page" href="../../pages/guide/quick-start.html">Quick Start</a>
       <a class="sb-page" href="../../pages/guide/why.html">Why this pattern</a>
@@ -64,19 +65,21 @@
 
 <h2 id="filesystem-is-the-nav">1. The filesystem IS the nav</h2>
 
-<p>Every directory under <code>docs/pages/</code> becomes a top tab. Every
-<code>.html</code> file becomes a page. <strong>You never maintain a central nav
-list.</strong></p>
+<p>Every directory under <code>docs/pages/</code> becomes a top tab. Inside a tab, the
+folder tree is mirrored recursively into the sidebar — <strong>you never maintain a
+central nav list, and nothing needs an <code>index.html</code>.</strong></p>
 
 <ul>
-  <li>Drop a new directory <code>docs/pages/&lt;x&gt;/</code> with an <code>index.html</code> → a new tab appears.</li>
-  <li>Drop a new <code>.html</code> file into a tab → a new sidebar entry appears.</li>
-  <li>Move or rename a file → its nav entry and URL move with it.</li>
+  <li><strong>Drop a folder</strong> <code>docs/pages/&lt;x&gt;/</code> with any <code>.html</code> inside → a new tab <code>X</code> appears, opening to its first page. No config, no index required.</li>
+  <li>A <strong>subfolder</strong> becomes a collapsible <em>divider</em>; the loose <code>.html</code> files in a folder are <em>pages</em> that sit alongside its subfolders, at every level.</li>
+  <li>An <code>index.html</code> is <em>optional</em>: if a folder has one, it's that folder's clickable default page (the tab or divider opens to it); if not, the divider is just a label.</li>
+  <li>Move or rename a file/folder → its nav entry and URL follow. Recurses to any depth: <code>tab → divider → page</code>, mirrored straight from the filesystem.</li>
 </ul>
 
-<p>Directories and files whose names start with <code>_</code> or <code>.</code> are
-skipped by the scanner — that's how <code>_lib/</code>, <code>_tab.json</code>, and
-<code>_site.json</code> stay out of the nav.</p>
+<p>So dropping a nested folder of HTML "just works" with zero config. Directories and files
+whose names start with <code>_</code> or <code>.</code> are skipped by the scanner — that's
+how <code>_lib/</code>, <code>_tab.json</code>, and <code>_site.json</code> stay out of the
+nav.</p>
 
 <h2 id="tab-json-is-for-overrides-only">2. <code>_tab.json</code> is for overrides only</h2>
 
@@ -89,9 +92,9 @@ optional:</p>
   <tbody>
     <tr><td><code>label</code></td><td>Tab text in the header (default: title-cased directory name).</td></tr>
     <tr><td><code>key</code></td><td>CSS accent class for the tab (default: directory name).</td></tr>
-    <tr><td><code>landing</code></td><td>Page the tab opens to, relative to the tab dir (default: <code>index.html</code>).</td></tr>
+    <tr><td><code>landing</code></td><td>Page the tab opens to, relative to the tab dir (default: <code>index.html</code>, else the first page).</td></tr>
     <tr><td><code>order_priority</code></td><td>Smaller = further left in the tab strip (default: 100).</td></tr>
-    <tr><td><code>sections</code></td><td>Curated sidebar groups (see §6). Omit to auto-discover one section per subdirectory.</td></tr>
+    <tr><td><code>sections</code></td><td>Curated sidebar groups with explicit order/labels (see §6). <strong>Omit (the default) to mirror the folder tree recursively.</strong></td></tr>
     <tr><td><code>external_layout</code></td><td><code>true</code> = the tab's pages own their chrome; the wrap script leaves them alone (see §10).</td></tr>
   </tbody>
 </table>
@@ -125,22 +128,27 @@ around it. Rules that make a page behave:</p>
   <li>Page-specific <code>&lt;style&gt;</code> in the head and trailing <code>&lt;script&gt;</code> blocks are preserved across re-wraps.</li>
 </ul>
 
-<h2 id="bake-the-chrome">6. Bake the chrome after structural changes</h2>
+<h2 id="bake-the-chrome">6. The chrome is baked — automatically while you serve</h2>
 
-<p>The dev server reloads <em>content</em> live, but the header/sidebar/breadcrumbs/TOC
-are baked in at author time. After you add, move, rename, or retitle a page — or change
-the layout, branding, or a <code>_tab.json</code> — re-run:</p>
+<p>The header/sidebar/breadcrumbs/TOC aren't in your authored files; they're generated
+around your <code>&lt;main&gt;</code> block. <strong>The dev server does this for you</strong>:
+it bakes on startup and re-bakes on every change, so dropping or editing files "just works"
+— no manual step. (Disable with <code>NO_AUTOWRAP=1 ./run_dev.sh</code> if you want manual
+control.)</p>
+
+<p>When the server <em>isn't</em> running (e.g. in CI, or before committing), bake manually:</p>
 
 <pre><code>python3 docs/_lib/_wrap_handwritten.py</code></pre>
 
-<p>It is <strong>idempotent</strong>: running it twice produces no further change, and it
-won't double-escape titles or stack footers. A page is recognised by its
-<code>&lt;main class="doc-body"&gt;</code> block, so the operation is safe to repeat.</p>
+<p>It is <strong>idempotent</strong> and only writes files that actually changed: running it
+twice produces no further change, and it won't double-escape titles or stack footers. A page
+is recognised by its <code>&lt;main class="doc-body"&gt;</code> block, so it's safe to repeat.</p>
 
-<h3 id="curated-sidebar-sections">Curated sidebar sections</h3>
+<h3 id="curated-sidebar-sections">Curated sidebar sections (optional)</h3>
 
-<p>A tab's sidebar is built from its <code>sections</code>. Each section names a directory
-(relative to the tab) and may pin an <code>order</code> of file stems:</p>
+<p>By default the sidebar mirrors the folder tree (§1) — no config. When you want explicit
+labels or a pinned order, add <code>sections</code> to <code>_tab.json</code>. Each section
+names a directory (relative to the tab) and may pin an <code>order</code> of file stems:</p>
 
 <pre><code>"sections": [
   {"label": "Getting Started", "dir": "getting-started", "key": "guide"},
@@ -149,9 +157,8 @@ won't double-escape titles or stack footers. A page is recognised by its
 ]</code></pre>
 
 <p>A section with <code>"dir": ""</code> points at the tab root itself — that's how a flat
-tab (files directly under the tab dir, no subfolders) renders a sidebar, as both tabs in
-this site do. Omit <code>sections</code> entirely and the scanner auto-creates one section
-per subdirectory.</p>
+tab pins a custom page order, as both tabs in this site do. Drop <code>sections</code> and
+the tab reverts to the zero-config recursive mirror.</p>
 
 <h2 id="assets-and-lib-are-invisible">7. <code>assets/</code> and <code>_lib/</code> are invisible to the nav</h2>
 
@@ -199,8 +206,8 @@ still appears in the header. See <a href="../recipes/include-html-deck.html">Rec
       <a class="toc-h2" href="#two-to-five-tabs">3. Two-to-five tabs is the sweet spot</a>
       <a class="toc-h2" href="#root-landing">4. The root landing is docs/index.html</a>
       <a class="toc-h2" href="#author-the-main-block">5. Author inside &lt;main class="doc-body"&gt;</a>
-      <a class="toc-h2" href="#bake-the-chrome">6. Bake the chrome after structural changes</a>
-      <a class="toc-h3" href="#curated-sidebar-sections">Curated sidebar sections</a>
+      <a class="toc-h2" href="#bake-the-chrome">6. The chrome is baked — automatically while you serve</a>
+      <a class="toc-h3" href="#curated-sidebar-sections">Curated sidebar sections (optional)</a>
       <a class="toc-h2" href="#assets-and-lib-are-invisible">7. assets/ and _lib/ are invisible to the nav</a>
       <a class="toc-h2" href="#cross-page-links">8. Cross-page links use relative paths</a>
       <a class="toc-h2" href="#branding-lives-in-site-json">9. Branding lives in docs/_site.json</a>

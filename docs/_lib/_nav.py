@@ -65,12 +65,19 @@ def _load_tab_cfg(tab_dir: Path) -> dict:
 
 
 def _find_default_landing(tab_dir: Path) -> str | None:
-    """Pick a landing path (relative to tab_dir). Prefer tab_dir/index.html;
-    else first index.html found anywhere underneath."""
+    """Pick a landing path (relative to tab_dir). Order of preference:
+    tab_dir/index.html → first top-level .html (open to top-level content) →
+    first index.html anywhere underneath → first .html found anywhere. The last
+    fallbacks mean a folder with NO index.html still gets a tab."""
     direct = tab_dir / "index.html"
     if direct.exists():
         return "index.html"
+    top = sorted(tab_dir.glob("*.html"), key=lambda p: p.name.lower())
+    if top:
+        return top[0].name
     for f in sorted(tab_dir.rglob("index.html")):
+        return f.relative_to(tab_dir).as_posix()
+    for f in sorted(tab_dir.rglob("*.html"), key=lambda p: p.as_posix().lower()):
         return f.relative_to(tab_dir).as_posix()
     return None
 
@@ -102,20 +109,15 @@ def get_tabs() -> list[dict]:
         priority = int(cfg.get("order_priority", 100))
 
         sections_cfg = cfg.get("sections")
-        if sections_cfg is None:
-            # Default: one auto-discovered section per subdir under the
-            # tab dir. (If there are no subdirs, the section list is
-            # empty and render_sidebar will silently skip rendering.)
-            sections_cfg = []
-            for sub in sorted(d.iterdir()):
-                if sub.is_dir() and not sub.name.startswith("_") and not sub.name.startswith("."):
-                    sections_cfg.append(
-                        {"label": _default_label(sub.name), "dir": sub.name, "key": key}
-                    )
+        # Auto mode (no explicit `sections`): the sidebar is built by recursively
+        # mirroring the tab folder — loose .html as pages, subfolders as dividers,
+        # index.html as a folder's default page (see render_sidebar / _scan_root).
+        # No per-section precomputation needed. Explicit `sections` keep the old
+        # curated behaviour.
+        auto_nav = sections_cfg is None
 
-        # Resolve each section's `dir` to be relative to docs/ root.
         sections: list[dict] = []
-        for sec in sections_cfg:
+        for sec in sections_cfg or []:
             sec = dict(sec)
             sec_dir = sec.get("dir", "")
             if not sec_dir.startswith("pages/"):
@@ -130,6 +132,7 @@ def get_tabs() -> list[dict]:
                     "key": key,
                     "landing": landing,
                     "sections": sections,
+                    "auto_nav": auto_nav,
                     "external_layout": external,
                     "_dir": d.name,
                 },
@@ -221,19 +224,58 @@ def _scan_dir(current: Path) -> list[dict]:
                 "href": f.relative_to(V2).as_posix(),
             }
         )
-    for d in sorted([d for d in current.iterdir() if d.is_dir()]):
+    for d in sorted(
+        [d for d in current.iterdir() if d.is_dir() and not d.name.startswith(("_", "."))]
+    ):
         idx = d / "index.html"
         if idx.exists():
             label = _page_title(idx)
             href = idx.relative_to(V2).as_posix()
         else:
-            label = d.name.replace("-", " ").replace("_", " ").title()
+            label = _default_label(d.name)
             href = None
         nodes.append(
             {
                 "kind": "group",
                 "label": label,
                 "href": href,
+                "key": d.relative_to(V2).as_posix(),
+                "children": _scan_dir(d),
+            }
+        )
+    return nodes
+
+
+def _scan_root(tab_dir: Path) -> list[dict]:
+    """Nodes for a tab's whole sidebar in auto mode — the tab folder mirrored
+    recursively. Unlike _scan_dir, the tab-root index.html IS surfaced as a page
+    (no parent group consumes it); it just sorts first. Subfolders become
+    collapsible dividers; their own index.html is their clickable default page."""
+    nodes: list[dict] = []
+    files = sorted(
+        tab_dir.glob("*.html"),
+        key=lambda p: (p.name != "index.html", p.stem.lower()),
+    )
+    for f in files:
+        nodes.append(
+            {"kind": "page", "label": _page_title(f), "href": f.relative_to(V2).as_posix()}
+        )
+    for d in sorted(
+        [d for d in tab_dir.iterdir() if d.is_dir() and not d.name.startswith(("_", "."))]
+    ):
+        idx = d / "index.html"
+        if idx.exists():
+            label = _page_title(idx)
+            href = idx.relative_to(V2).as_posix()
+        else:
+            label = _default_label(d.name)
+            href = None
+        nodes.append(
+            {
+                "kind": "group",
+                "label": label,
+                "href": href,
+                "key": d.relative_to(V2).as_posix(),
                 "children": _scan_dir(d),
             }
         )
@@ -307,6 +349,7 @@ def _discover_tree(section: dict) -> list[dict]:
                 "kind": "group",
                 "label": label,
                 "href": href,
+                "key": d.relative_to(V2).as_posix(),
                 "children": _scan_dir(d),
             }
         )
@@ -373,8 +416,9 @@ def _render_nodes(nodes: list[dict], page_rel: str, prefix: str) -> str:
         else:
             label_html = f'<span class="sb-group-label-text">{n["label"]}</span>'
         children_html = _render_nodes(n["children"], page_rel, prefix)
+        data_key = f' data-key="{html.escape(n.get("key", ""))}"' if n.get("key") else ""
         parts.append(
-            f'<details class="sb-subsection"{open_attr}>'
+            f'<details class="sb-subsection"{data_key}{open_attr}>'
             f'<summary class="sb-subsection-label">{label_html}</summary>'
             f'<div class="sb-pages">{children_html}</div>'
             f"</details>"
@@ -390,25 +434,31 @@ def render_sidebar(active_tab: str, page_rel: str) -> str:
     depth = page_rel.count("/")
     prefix = "../" * depth if depth else ""
 
-    section_html = []
-    for sec in tab["sections"]:
-        nodes = _discover_tree(sec)
-        if not nodes:
-            continue
-        contains_active = _contains_active(nodes, page_rel)
-        open_attr = " open" if contains_active else ""
-        body = _render_nodes(nodes, page_rel, prefix)
-        section_html.append(
-            f'<details class="sb-section"{open_attr}>'
-            f'<summary class="sb-section-label">{sec["label"]}</summary>'
-            f'<div class="sb-pages">{body}</div>'
-            f"</details>"
-        )
-    sections_block = "\n  ".join(section_html)
+    if tab.get("auto_nav"):
+        # Plug-and-play: mirror the tab folder recursively. Loose .html render as
+        # page links, subfolders as collapsible dividers (their index.html is the
+        # clickable default page), to any depth — no _tab.json, no index required.
+        nodes = _scan_root(PAGES / tab["_dir"])
+        inner = _render_nodes(nodes, page_rel, prefix)
+    else:
+        section_html = []
+        for sec in tab["sections"]:
+            nodes = _discover_tree(sec)
+            if not nodes:
+                continue
+            open_attr = " open" if _contains_active(nodes, page_rel) else ""
+            body = _render_nodes(nodes, page_rel, prefix)
+            section_html.append(
+                f'<details class="sb-section" data-key="{html.escape(sec["dir"])}"{open_attr}>'
+                f'<summary class="sb-section-label">{sec["label"]}</summary>'
+                f'<div class="sb-pages">{body}</div>'
+                f"</details>"
+            )
+        inner = "\n  ".join(section_html)
 
     return f"""<aside class="sidebar-left" aria-label="Section navigation">
   <div class="sidebar-inner">
-  {sections_block}
+  {inner}
   </div>
 </aside>"""
 

@@ -262,12 +262,37 @@ def main():
     args = p.parse_args()
 
     os.chdir(V2_DIR)
+    autowrap = os.environ.get("NO_AUTOWRAP", "") == ""
     print("docs/ live-reload server")
     print(f"  root      : {V2_DIR}")
     print(f"  url       : http://{args.host}:{args.port}/")
     print(f"  interval  : {args.interval}s")
+    print(f"  auto-wrap : {'on' if autowrap else 'off (NO_AUTOWRAP set)'}")
 
-    html_watcher = Watcher(V2_DIR, args.interval, broadcast_reload, label="html")
+    # Bake the chrome on startup so dropped/edited pages are current, then
+    # re-bake on every change before reloading the browser — so dropping a
+    # folder of pages "just works" with no manual wrap step.
+    if autowrap:
+        import _wrap_handwritten as _wrap
+
+        try:
+            _wrap.main(quiet=True)
+        except Exception as e:
+            print(f"  (initial wrap skipped: {type(e).__name__}: {e})")
+
+    def on_change(changed):
+        if autowrap:
+            try:
+                n = _wrap.main(quiet=True)
+                if n:
+                    print(f"  ⤷ wrapped {n} page(s)")
+            except Exception as e:
+                print(f"  (auto-wrap error: {type(e).__name__}: {e})")
+            # Absorb the wrap's own writes so they aren't seen as a new change.
+            html_watcher.last = snapshot(V2_DIR)
+        broadcast_reload(changed)
+
+    html_watcher = Watcher(V2_DIR, args.interval, on_change, label="html")
     html_watcher.start()
 
     print("  Ctrl+C to stop.\n")

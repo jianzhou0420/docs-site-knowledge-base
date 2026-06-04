@@ -38,6 +38,29 @@
     a.addEventListener('click', function (e) { e.stopPropagation(); });
   });
 
+  // ----- persist sidebar divider open/closed across navigation -----
+  // The baked HTML only opens the branch containing the active page, so without
+  // this, navigating to another page collapses every other divider. We remember
+  // the user's expand/collapse choices (per browser session) and restore them on
+  // load — never collapsing the branch that holds the active page.
+  (function () {
+    var STORE = 'sb-open';
+    var state = {};
+    try { state = JSON.parse(sessionStorage.getItem(STORE) || '{}'); } catch (_) {}
+    function persist() {
+      try { sessionStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {}
+    }
+    document.querySelectorAll('.sidebar-left details[data-key]').forEach(function (d) {
+      var key = d.getAttribute('data-key');
+      var hasActive = !!d.querySelector('.active');
+      if (key in state) {
+        if (state[key]) d.open = true;
+        else if (!hasActive) d.open = false; // never fold the active branch
+      }
+      d.addEventListener('toggle', function () { state[key] = d.open; persist(); });
+    });
+  })();
+
   // ----- right-TOC active-section highlighting via IntersectionObserver -----
   var tocLinks = document.querySelectorAll('.sidebar-right a[href^="#"]');
   if (tocLinks.length && 'IntersectionObserver' in window) {
